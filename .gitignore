@@ -1,0 +1,11 @@
+﻿__pycache__/
+*.pyc
+*.pyo
+dist/
+build/
+.venv/
+venv/
+.vscode/
+.idea/
+*.exe
+Thumbs.db

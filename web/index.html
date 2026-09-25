@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мираж-Гео | Ballistic Calculator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .subtitle { text-align: center; opacity: 0.8; margin-bottom: 30px; }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .card h2 { margin-bottom: 16px; font-size: 1.5rem; border-bottom: 2px solid #4a90e2; padding-bottom: 8px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        label { display: block; margin-bottom: 4px; font-size: 0.9rem; opacity: 0.9; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus { outline: none; border-color: #4a90e2; box-shadow: 0 0 0 2px rgba(74,144,226,0.3); }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.1s;
+        }
+        button:hover:not(:disabled) { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status { padding: 12px; border-radius: 8px; margin-top: 15px; display: none; font-weight: bold; }
+        .status.error { background: rgba(231, 76, 60, 0.3); border: 1px solid #e74c3c; display: block; }
+        .status.success { background: rgba(46, 204, 113, 0.3); border: 1px solid #2ecc71; display: block; }
+        .trajectory { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 10px; margin-bottom: 10px; }
+        .trajectory h3 { margin-bottom: 12px; color: #4a90e2; }
+        .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .result-row:last-child { border-bottom: none; }
+        .result-label { opacity: 0.8; }
+        .result-value { font-weight: bold; color: #4a90e2; }
+        .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 0.9rem; }
+        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎯 Мираж-Гео</h1>
+    <p class="subtitle">Create Big Cannons — Ballistic Calculator</p>
+
+    <div class="grid-2">
+        <div class="card">
+            <h2>Позиция пушки</h2>
+            <div class="grid-3">
+                <div><label>X</label><input type="number" id="cx" value="0"></div>
+                <div><label>Y</label><input type="number" id="cy" value="64"></div>
+                <div><label>Z</label><input type="number" id="cz" value="0"></div>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Позиция цели</h2>
+            <div class="grid-3">
+                <div><label>X</label><input type="number" id="tx" value="100"></div>
+                <div><label>Y</label><input type="number" id="ty" value="64"></div>
+                <div><label>Z</label><input type="number" id="tz" value="0"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Конфигурация пушки</h2>
+        <div class="grid-3">
+            <div><label>Длина ствола (blocks)</label><input type="number" id="length" value="5" min="1"></div>
+            <div><label>Кол-во пороховых зарядов</label><input type="number" id="power" value="4" min="1"></div>
+            <div>
+                <label>Направление</label>
+                <select id="direction">
+                    <option value="east">East (Восток)</option>
+                    <option value="west">West (Запад)</option>
+                    <option value="north">North (Север)</option>
+                    <option value="south">South (Юг)</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="calculate()" id="calcBtn">Рассчитать</button>
+        <div id="status" class="status"></div>
+    </div>
+
+    <div id="results" style="display:none;">
+        <div class="card">
+            <h2>Результаты</h2>
+            <div class="trajectory">
+                <h3>📐 Траектория 1 (прямая)</h3>
+                <div class="result-row"><span class="result-label">Yaw (горизонталь)</span><span class="result-value" id="yaw1">-</span></div>
+                <div class="result-row"><span class="result-label">Pitch (вертикаль)</span><span class="result-value" id="pitch1">-</span></div>
+                <div class="result-row"><span class="result-label">Время полёта (сек)</span><span class="result-value" id="air1">-</span></div>
+                <div class="result-row"><span class="result-label">Запал (fuze, тики)</span><span class="result-value" id="fuze1">-</span></div>
+                <div class="result-row"><span class="result-label">Точность</span><span class="result-value" id="prec1">-</span></div>
+            </div>
+            <div class="trajectory">
+                <h3>🌉 Траектория 2 (навесная)</h3>
+                <div class="result-row"><span class="result-label">Yaw (горизонталь)</span><span class="result-value" id="yaw2">-</span></div>
+                <div class="result-row"><span class="result-label">Pitch (вертикаль)</span><span class="result-value" id="pitch2">-</span></div>
+                <div class="result-row"><span class="result-label">Время полёта (сек)</span><span class="result-value" id="air2">-</span></div>
+                <div class="result-row"><span class="result-label">Запал (fuze, тики)</span><span class="result-value" id="fuze2">-</span></div>
+                <div class="result-row"><span class="result-label">Точность</span><span class="result-value" id="prec2">-</span></div>
+            </div>
+        </div>
+    </div>
+
+    <p class="footer">Мираж-Гео © 2026 — Основано на оригинальном калькуляторе Malex21</p>
+</div>
+
+<script>
+// ===== Баллистическое ядро (порт с Python) =====
+class OutOfRangeException extends Error {
+    constructor(msg) { super(msg); this.name = "OutOfRangeException"; }
+}
+
+function timeInAir(y0, y, Vy) {
+    let t = 0, t_below = 999999999;
+    if (y0 <= y) {
+        while (t < 100000) {
+            y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
+            if (y0 > y) { t_below = t - 1; break; }
+        }
+        if (Vy < 0) return [-1, -1];
+        while (t < 100000) {
+            y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
+            if (y0 <= y) return [t_below, t];
+        }
+        return [-1, -1];
+    }
+    while (t < 100000) {
+        y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
+        if (y0 <= y) { t_below = t - 1; break; }
+    }
+    if (Vy > 0) return [-1, -1];
+    while (t < 100000) {
+        y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
+        if (y0 > y) return [t_below, t];
+    }
+    return [-1, -1];
+}
+
+function linspace(start, end, num) {
+    const step = (end - start) / (num - 1);
+    const res = [];
+    for (let i = 0; i < num; i++) res.push(start + step * i);
+    return res;
+}
+
+function tryAngles(low, high, num, dist, speed, len, cy, ty, unique=false) {
+    const deltas = [];
+    for (const pitch of linspace(low, high, num)) {
+        const rad = pitch * Math.PI / 180;
+        const Vw = Math.cos(rad) * speed;
+        const Vy = Math.sin(rad) * speed;
+        const x2d = len * Math.cos(rad);
+        let timeToTarget;
+        try {
+            timeToTarget = Math.abs(Math.log(1 - (dist - x2d) / (100 * Vw)) / -0.010050335853501);
+        } catch { continue; }
+        const yBarrel = cy + Math.sin(rad) * len;
+        const [tb, ta] = timeInAir(yBarrel, ty, Vy);
+        if (tb < 0) continue;
+        const deltaT = Math.min(Math.abs(timeToTarget - tb), Math.abs(timeToTarget - ta));
+        deltas.push([deltaT, pitch, deltaT + timeToTarget]);
+    }
+    if (deltas.length === 0) throw new OutOfRangeException("Цель недостижима с текущей конфигурацией!");
+    deltas.sort((a, b) => a[0] - b[0]);
+    if (unique) return deltas[0];
+    return [deltas[0], deltas[deltas.length - 1]];
+}
+
+function ballisticsToTarget(cannon, target, power, direction, length) {
+    const Dx = cannon[0] - target[0];
+    const Dz = cannon[2] - target[2];
+    const dist = Math.sqrt(Dx*Dx + Dz*Dz);
+    const speed = power * 2;
+    
+    let yaw = Dx !== 0 ? Math.atan(Dz/Dx) * 57.2957795131 : 90;
+    if (Dx >= 0) yaw += 180;
+    
+    let [r1, r2] = tryAngles(-30, 60, 91, dist, speed, length, cannon[1], target[1]);
+    let [dt1, p1, at1] = r1;
+    let [dt2, p2, at2] = r2;
+    
+    for (let i = 0; i < 5; i++) {
+        [dt1, p1, at1] = tryAngles(p1 - 10**(-i), p1 + 10**(-i), 21, dist, speed, length, cannon[1], target[1], true);
+        [dt2, p2, at2] = tryAngles(p2 - 10**(-i), p2 + 10**(-i), 21, dist, speed, length, cannon[1], target[1], true);
+    }
+    
+    p1 = p1 > 60.5 ? "Over 60" : p1 < -29.5 ? "Under -30" : p1;
+    p2 = p2 > 60.5 ? "Over 60" : p2 < -29.5 ? "Under -30" : p2;
+    
+    if (direction === "north") yaw = (yaw + 90) % 360;
+    else if (direction === "west") yaw = (yaw + 180) % 360;
+    else if (direction === "south") yaw = (yaw + 270) % 360;
+    
+    return [
+        [yaw, p1, at1, at1/20, Math.floor(at1 + dt1/2 - 10), Math.round((1 - dt1/at1) * 100)],
+        [yaw, p2, at2, at2/20, Math.floor(at2 + dt2/2 - 10), Math.round((1 - dt2/at2) * 100)]
+    ];
+}
+
+// ===== UI =====
+function showStatus(msg, isError) {
+    const s = document.getElementById('status');
+    s.textContent = msg;
+    s.className = 'status ' + (isError ? 'error' : 'success');
+}
+
+function calculate() {
+    try {
+        const cannon = [+document.getElementById('cx').value, +document.getElementById('cy').value, +document.getElementById('cz').value];
+        const target = [+document.getElementById('tx').value, +document.getElementById('ty').value, +document.getElementById('tz').value];
+        const length = +document.getElementById('length').value;
+        const power = +document.getElementById('power').value;
+        const direction = document.getElementById('direction').value;
+        
+        if (cannon.some(isNaN) || target.some(isNaN) || isNaN(length) || isNaN(power)) {
+            showStatus("Ошибка: все поля должны содержать числа", true);
+            return;
+        }
+        
+        const [r1, r2] = ballisticsToTarget(cannon, target, power, direction, length);
+        
+        ['yaw','pitch','air','fuze','prec'].forEach((f,i) => {
+            document.getElementById(f+'1').textContent = i === 3 ? r1[4] + ' ticks' : (i === 4 ? r1[5] + '%' : r1[i]);
+            document.getElementById(f+'2').textContent = i === 3 ? r2[4] + ' ticks' : (i === 4 ? r2[5] + '%' : r2[i]);
+        });
+        
+        document.getElementById('results').style.display = 'block';
+        showStatus("✓ Расчёт выполнен успешно", false);
+    } catch (e) {
+        showStatus(e.message || "Ошибка расчёта", true);
+        document.getElementById('results').style.display = 'none';
+    }
+}
+</script>
+</body>
+</html>
