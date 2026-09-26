@@ -2,8 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РњРёСЂР°Р¶-Р“РµРѕ | Ballistic Calculator Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1E538D">
+    <meta name="description" content="Баллистический калькулятор для Create: Big Cannons">
+    <title>Мираж-Гео | Ballistic Calculator Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
@@ -26,13 +31,14 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            padding: 2rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -43,7 +49,7 @@
             max-width: 1400px;
             background: var(--bg-secondary);
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
@@ -53,53 +59,53 @@
             padding: 1rem;
             border-radius: 15px;
             margin-bottom: 0.5rem;
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
         .subtitle {
             text-align: center;
             color: var(--text-secondary);
-            margin-bottom: 2rem;
-            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
 
         .input-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .input-section {
             background: var(--bg-card);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 12px;
             border: 1px solid var(--border);
         }
 
         .input-section h2 {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             color: var(--accent-hover);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             border-bottom: 2px solid var(--accent);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.4rem;
         }
 
         .coord-inputs {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
         }
 
         input, select {
             width: 100%;
-            padding: 0.7rem;
+            padding: 0.6rem;
             border-radius: 8px;
             border: 1px solid var(--border);
             background: rgba(0, 0, 0, 0.2);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: border-color 0.2s;
         }
 
@@ -112,14 +118,14 @@
             display: block;
             margin-bottom: 0.3rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .options-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
         }
 
         .options-row .option-group {
@@ -129,7 +135,7 @@
 
         .projectile-selector {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             align-items: flex-end;
         }
 
@@ -138,13 +144,13 @@
         }
 
         .btn-icon {
-            padding: 0.7rem;
+            padding: 0.6rem;
             background: var(--accent);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: background 0.2s;
             white-space: nowrap;
         }
@@ -153,21 +159,29 @@
             background: var(--accent-hover);
         }
 
-        .projectile-actions {
+        .action-buttons {
             display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 0.8rem;
             flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
 
         button {
             width: 100%;
-            padding: 1rem;
+            padding: 0.9rem;
             background: var(--accent);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
@@ -184,31 +198,32 @@
         }
 
         .results {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 1.5rem;
         }
 
         .trajectory-card {
             background: var(--bg-card);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 12px;
             border-left: 4px solid var(--accent);
             border: 1px solid var(--border);
         }
 
         .trajectory-card h3 {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             color: var(--accent-hover);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .result-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem 0;
+            padding: 0.4rem 0;
             border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
         }
 
         .result-row:last-child {
@@ -232,19 +247,20 @@
             display: inline-block;
             background: var(--accent);
             color: white;
-            padding: 0.2rem 0.6rem;
+            padding: 0.2rem 0.5rem;
             border-radius: 12px;
-            font-size: 0.8rem;
-            margin-left: 0.5rem;
+            font-size: 0.75rem;
+            margin-left: 0.4rem;
         }
 
         #status {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             font-weight: bold;
-            min-height: 1.5rem;
-            padding: 0.5rem;
+            min-height: 1.3rem;
+            padding: 0.4rem;
             border-radius: 8px;
+            font-size: 0.9rem;
         }
 
         .success { color: var(--success); background: rgba(80, 188, 84, 0.1); }
@@ -263,34 +279,34 @@
             transform: translateX(-50%);
             background: #000;
             color: #fff;
-            padding: 0.5rem;
+            padding: 0.4rem;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             white-space: nowrap;
             z-index: 100;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .visualization-section {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             background: var(--bg-card);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 12px;
             border: 1px solid var(--border);
         }
 
         .visualization-section h2 {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             color: var(--accent-hover);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             border-bottom: 2px solid var(--accent);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.4rem;
         }
 
         .canvas-container {
             position: relative;
             width: 100%;
-            height: 400px;
+            height: 350px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             overflow: hidden;
@@ -304,7 +320,7 @@
 
         #threeContainer {
             width: 100%;
-            height: 500px;
+            height: 400px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             overflow: hidden;
@@ -312,31 +328,32 @@
 
         .canvas-controls {
             display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 0.6rem;
+            margin-top: 0.8rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .canvas-controls button {
             width: auto;
-            padding: 0.5rem 1.5rem;
-            font-size: 0.9rem;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
         }
 
         .grapeshot-info {
-            margin-top: 1rem;
-            padding: 1rem;
+            margin-top: 0.8rem;
+            padding: 0.8rem;
             background: rgba(192, 102, 97, 0.1);
             border: 1px solid var(--warning);
             border-radius: 8px;
             color: var(--warning);
+            font-size: 0.9rem;
         }
 
         .grapeshot-info h3 {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -357,10 +374,10 @@
 
         .modal-content {
             background: var(--bg-secondary);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 15px;
             width: 90%;
-            max-width: 500px;
+            max-width: 450px;
             border: 1px solid var(--border);
             animation: slideIn 0.3s;
             max-height: 90vh;
@@ -378,23 +395,24 @@
         }
 
         .modal-content h2 {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             color: var(--accent-hover);
+            font-size: 1.3rem;
         }
 
         .modal-content .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .modal-content label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             color: var(--text-secondary);
         }
 
         .modal-content input {
             width: 100%;
-            padding: 0.7rem;
+            padding: 0.6rem;
             border-radius: 8px;
             border: 1px solid var(--border);
             background: rgba(0, 0, 0, 0.2);
@@ -403,8 +421,8 @@
 
         .modal-buttons {
             display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
         }
 
         .modal-buttons button {
@@ -415,43 +433,39 @@
             background: var(--text-secondary);
         }
 
-        .btn-cancel:hover {
-            background: #808080;
-        }
-
-        /* Comparison section */
         .comparison-section {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             background: var(--bg-card);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 12px;
             border: 1px solid var(--border);
         }
 
         .comparison-section h2 {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             color: var(--accent-hover);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             border-bottom: 2px solid var(--accent);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.4rem;
         }
 
         .projectile-checkboxes {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .checkbox-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
+            gap: 0.4rem;
+            padding: 0.4rem;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s;
+            font-size: 0.85rem;
         }
 
         .checkbox-item:hover {
@@ -470,17 +484,36 @@
         }
 
         .color-indicator {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
 
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 999;
+            display: none;
+        }
+
+        .install-prompt button {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
         footer {
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         footer a {
@@ -488,332 +521,208 @@
             text-decoration: none;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        @media (max-width: 768px) {
+            body { padding: 0.5rem; }
+            .container { padding: 1rem; }
+            h1 { font-size: 1.4rem; }
+            .input-grid, .results { grid-template-columns: 1fr; }
+            .options-row { grid-template-columns: 1fr 1fr; }
+            .coord-inputs { grid-template-columns: 1fr; }
+            .canvas-container { height: 250px; }
+            #threeContainer { height: 300px; }
+            .action-buttons { flex-direction: column; }
+            .action-buttons button { width: 100%; }
         }
 
-        @media (max-width: 900px) {
-            .input-grid, .results {
-                grid-template-columns: 1fr;
-            }
-            .options-row {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .options-row {
-                grid-template-columns: 1fr;
-            }
-            .coord-inputs {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 480px) {
+            .options-row { grid-template-columns: 1fr; }
+            .projectile-checkboxes { grid-template-columns: 1fr; }
         }
     </style>
-    <link rel="manifest" href="manifest.json">
-       <link rel="icon" type="image/png" href="icon-192.png">
-   <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#1E538D">
-
 </head>
 <body>
     <div class="container">
-        <h1>рџЋЇ РњРёСЂР°Р¶-Р“РµРѕ</h1>
-        <p class="subtitle">Create Big Cannons вЂ” Ballistic Calculator Pro</p>
+        <h1>🎯 Мираж-Гео</h1>
+        <p class="subtitle">Create Big Cannons — Ballistic Calculator Pro</p>
 
         <div class="input-grid">
             <div class="input-section">
-                <h2>рџ“Ќ РџРѕР·РёС†РёСЏ РїСѓС€РєРё</h2>
+                <h2>📍 Позиция пушки</h2>
                 <div class="coord-inputs">
-                    <div>
-                        <label>X</label>
-                        <input type="number" id="cannon-x" placeholder="X">
-                    </div>
-                    <div>
-                        <label>Y</label>
-                        <input type="number" id="cannon-y" placeholder="Y">
-                    </div>
-                    <div>
-                        <label>Z</label>
-                        <input type="number" id="cannon-z" placeholder="Z">
-                    </div>
+                    <div><label>X</label><input type="number" id="cannon-x" placeholder="X"></div>
+                    <div><label>Y</label><input type="number" id="cannon-y" placeholder="Y"></div>
+                    <div><label>Z</label><input type="number" id="cannon-z" placeholder="Z"></div>
                 </div>
             </div>
 
             <div class="input-section">
-                <h2>рџЋЇ РџРѕР·РёС†РёСЏ С†РµР»Рё</h2>
+                <h2>🎯 Позиция цели</h2>
                 <div class="coord-inputs">
-                    <div>
-                        <label>X</label>
-                        <input type="number" id="target-x" placeholder="X">
-                    </div>
-                    <div>
-                        <label>Y</label>
-                        <input type="number" id="target-y" placeholder="Y">
-                    </div>
-                    <div>
-                        <label>Z</label>
-                        <input type="number" id="target-z" placeholder="Z">
-                    </div>
+                    <div><label>X</label><input type="number" id="target-x" placeholder="X"></div>
+                    <div><label>Y</label><input type="number" id="target-y" placeholder="Y"></div>
+                    <div><label>Z</label><input type="number" id="target-z" placeholder="Z"></div>
                 </div>
             </div>
         </div>
 
-        <div class="input-section" style="margin-bottom: 2rem;">
-            <h2>вљ™пёЏ РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ РїСѓС€РєРё</h2>
+        <div class="input-section" style="margin-bottom: 1.5rem;">
+            <h2>⚙️ Конфигурация пушки</h2>
             <div class="options-row">
                 <div class="option-group">
-                    <label>Р”Р»РёРЅР° СЃС‚РІРѕР»Р° (blocks)</label>
+                    <label>Длина ствола (blocks)</label>
                     <input type="number" id="length" min="1" placeholder="e.g. 10">
                 </div>
                 <div class="option-group">
-                    <label>РљРѕР»-РІРѕ РїРѕСЂРѕС…РѕРІС‹С… Р·Р°СЂСЏРґРѕРІ</label>
+                    <label>Кол-во пороховых зарядов</label>
                     <input type="number" id="power" min="1" placeholder="e.g. 5">
                 </div>
                 <div class="option-group">
-                    <label>РќР°РїСЂР°РІР»РµРЅРёРµ</label>
+                    <label>Направление</label>
                     <select id="direction">
-                        <option value="north">North (РЎРµРІРµСЂ)</option>
-                        <option value="south">South (Р®Рі)</option>
-                        <option value="east">East (Р’РѕСЃС‚РѕРє)</option>
-                        <option value="west">West (Р—Р°РїР°Рґ)</option>
+                        <option value="north">North (Север)</option>
+                        <option value="south">South (Юг)</option>
+                        <option value="east">East (Восток)</option>
+                        <option value="west">West (Запад)</option>
                     </select>
                 </div>
                 <div class="option-group">
-                    <label class="tooltip" data-tooltip="Р’С‹Р±РµСЂРёС‚Рµ С‚РёРї СЃРЅР°СЂСЏРґР° РґР»СЏ С‚РѕС‡РЅРѕРіРѕ СЂР°СЃС‡С‘С‚Р°">
-                        РўРёРї СЃРЅР°СЂСЏРґР° (Projectile)
-                    </label>
+                    <label class="tooltip" data-tooltip="Выберите тип снаряда">Тип снаряда</label>
                     <div class="projectile-selector">
-                        <select id="projectile-type">
-                            <!-- Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ РґРёРЅР°РјРёС‡РµСЃРєРё -->
-                        </select>
-                        <button class="btn-icon" id="btn-add-projectile" title="Р”РѕР±Р°РІРёС‚СЊ СЃРІРѕР№ СЃРЅР°СЂСЏРґ">вћ•</button>
+                        <select id="projectile-type"></select>
+                        <button class="btn-icon" id="btn-add-projectile" title="Добавить снаряд">➕</button>
                     </div>
                 </div>
             </div>
-            <div class="projectile-actions">
-                <button class="btn-icon" id="btn-export-projectiles" style="width: auto; padding: 0.5rem 1rem;">рџ“¤ Р­РєСЃРїРѕСЂС‚ СЃРЅР°СЂСЏРґРѕРІ</button>
-                <button class="btn-icon" id="btn-import-projectiles" style="width: auto; padding: 0.5rem 1rem;"> РРјРїРѕСЂС‚ СЃРЅР°СЂСЏРґРѕРІ</button>
+            <div class="action-buttons">
+                <button class="btn-icon" id="btn-export-projectiles"> Экспорт снарядов</button>
+                <button class="btn-icon" id="btn-import-projectiles">📥 Импорт снарядов</button>
+                <button class="btn-icon" id="btn-save-scenario">💾 Сохранить сценарий</button>
+                <button class="btn-icon" id="btn-load-scenario">📂 Загрузить сценарий</button>
                 <input type="file" id="import-file" accept=".json" style="display: none;">
+                <input type="file" id="scenario-file" accept=".json" style="display: none;">
             </div>
         </div>
 
-        <button id="calculate-btn" disabled>Р Р°СЃСЃС‡РёС‚Р°С‚СЊ</button>
-
+        <button id="calculate-btn" disabled>Рассчитать</button>
         <div id="status"></div>
 
         <div class="results" id="results" style="display: none;">
             <div class="trajectory-card">
-                <h3> РўСЂР°РµРєС‚РѕСЂРёСЏ 1 (РќРёР·РєР°СЏ / РџСЂСЏРјР°СЏ) <span class="projectile-badge" id="proj-badge-1">вЂ”</span></h3>
-                <div class="result-row">
-                    <span class="result-label">Yaw (РіРѕСЂРёР·РѕРЅС‚.):</span>
-                    <span class="result-value" id="yaw-1">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Pitch (РІРµСЂС‚РёРє.):</span>
-                    <span class="result-value" id="pitch-1">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Р’СЂРµРјСЏ РїРѕР»С‘С‚Р°:</span>
-                    <span class="result-value" id="airtime-1">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Р’Р·СЂС‹РІР°С‚РµР»СЊ (С‚РёРєРё):</span>
-                    <span class="result-value" id="fuze-1">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">РўРѕС‡РЅРѕСЃС‚СЊ:</span>
-                    <span class="result-value" id="precision-1">вЂ”</span>
-                </div>
+                <h3>🚀 Траектория 1 (Низкая) <span class="projectile-badge" id="proj-badge-1">—</span></h3>
+                <div class="result-row"><span class="result-label">Yaw:</span><span class="result-value" id="yaw-1">—</span></div>
+                <div class="result-row"><span class="result-label">Pitch:</span><span class="result-value" id="pitch-1">—</span></div>
+                <div class="result-row"><span class="result-label">Время полёта:</span><span class="result-value" id="airtime-1">—</span></div>
+                <div class="result-row"><span class="result-label">Взрыватель:</span><span class="result-value" id="fuze-1">—</span></div>
+                <div class="result-row"><span class="result-label">Точность:</span><span class="result-value" id="precision-1">—</span></div>
             </div>
 
             <div class="trajectory-card">
-                <h3>рџЊ™ РўСЂР°РµРєС‚РѕСЂРёСЏ 2 (Р’С‹СЃРѕРєР°СЏ / РќР°РІРµСЃРЅР°СЏ) <span class="projectile-badge" id="proj-badge-2">вЂ”</span></h3>
-                <div class="result-row">
-                    <span class="result-label">Yaw (РіРѕСЂРёР·РѕРЅС‚.):</span>
-                    <span class="result-value" id="yaw-2">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Pitch (РІРµСЂС‚РёРє.):</span>
-                    <span class="result-value" id="pitch-2">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Р’СЂРµРјСЏ РїРѕР»С‘С‚Р°:</span>
-                    <span class="result-value" id="airtime-2">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Р’Р·СЂС‹РІР°С‚РµР»СЊ (С‚РёРєРё):</span>
-                    <span class="result-value" id="fuze-2">вЂ”</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">РўРѕС‡РЅРѕСЃС‚СЊ:</span>
-                    <span class="result-value" id="precision-2">вЂ”</span>
-                </div>
+                <h3>🌙 Траектория 2 (Высокая) <span class="projectile-badge" id="proj-badge-2">—</span></h3>
+                <div class="result-row"><span class="result-label">Yaw:</span><span class="result-value" id="yaw-2">—</span></div>
+                <div class="result-row"><span class="result-label">Pitch:</span><span class="result-value" id="pitch-2">—</span></div>
+                <div class="result-row"><span class="result-label">Время полёта:</span><span class="result-value" id="airtime-2">—</span></div>
+                <div class="result-row"><span class="result-label">Взрыватель:</span><span class="result-value" id="fuze-2">—</span></div>
+                <div class="result-row"><span class="result-label">Точность:</span><span class="result-value" id="precision-2">—</span></div>
             </div>
         </div>
 
-        <!-- 2D Visualization with Animation -->
         <div class="visualization-section" id="visualization-section" style="display: none;">
-            <h2>рџ“Љ 2D Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ С‚СЂР°РµРєС‚РѕСЂРёРё</h2>
-            <div class="canvas-container">
-                <canvas id="trajectoryCanvas"></canvas>
-            </div>
+            <h2>📊 2D Визуализация</h2>
+            <div class="canvas-container"><canvas id="trajectoryCanvas"></canvas></div>
             <div class="canvas-controls">
-                <button id="btn-play-animation">в–¶пёЏ Play</button>
-                <button id="btn-pause-animation">вЏёпёЏ Pause</button>
-                <button id="btn-reset-animation">рџ”„ Reset</button>
+                <button id="btn-play-animation">▶️ Play</button>
+                <button id="btn-pause-animation">⏸️ Pause</button>
+                <button id="btn-reset-animation">🔄 Reset</button>
+                <button id="btn-download-2d">📥 Скачать PNG</button>
             </div>
             <div id="grapeshot-info" class="grapeshot-info" style="display: none;">
-                <h3>рџЋЇ РљРѕРЅСѓСЃ РїРѕСЂР°Р¶РµРЅРёСЏ РєР°СЂС‚РµС‡Рё</h3>
-                <p>РЈРіРѕР» СЂР°Р·Р»С‘С‚Р°: <strong id="cone-angle">вЂ”</strong>В°</p>
-                <p>Р Р°РґРёСѓСЃ РїРѕСЂР°Р¶РµРЅРёСЏ РЅР° РґРёСЃС‚Р°РЅС†РёРё: <strong id="cone-radius">вЂ”</strong> Р±Р»РѕРєРѕРІ</p>
+                <h3>🎯 Конус поражения картечи</h3>
+                <p>Угол разлёта: <strong id="cone-angle">—</strong>°</p>
+                <p>Радиус поражения: <strong id="cone-radius">—</strong> блоков</p>
             </div>
         </div>
 
-        <!-- 3D Visualization -->
         <div class="visualization-section" id="three-section" style="display: none;">
-            <h2>рџЊђ 3D Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ (Three.js)</h2>
+            <h2>🌐 3D Визуализация</h2>
             <div id="threeContainer"></div>
-            <p style="text-align: center; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                рџ–±пёЏ Р›РљРњ вЂ” РІСЂР°С‰РµРЅРёРµ | РљРѕР»С‘СЃРёРєРѕ вЂ” Р·СѓРј | РџРљРњ вЂ” РїРµСЂРµРјРµС‰РµРЅРёРµ
+            <div class="canvas-controls">
+                <button id="btn-download-3d">📥 Скачать 3D как PNG</button>
+            </div>
+            <p style="text-align: center; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                🖱️ ЛКМ — вращение | Колёсико — зум | ПКМ — перемещение
             </p>
         </div>
 
-        <!-- Comparison Section -->
         <div class="comparison-section" id="comparison-section">
-            <h2>рџ“Љ РЎСЂР°РІРЅРµРЅРёРµ С‚СЂР°РµРєС‚РѕСЂРёР№ СЂР°Р·РЅС‹С… СЃРЅР°СЂСЏРґРѕРІ</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                Р’С‹Р±РµСЂРёС‚Рµ РґРѕ 4 СЃРЅР°СЂСЏРґРѕРІ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ РёС… С‚СЂР°РµРєС‚РѕСЂРёР№ РЅР° РѕРґРЅРѕРј РіСЂР°С„РёРєРµ:
+            <h2>📊 Сравнение траекторий</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 0.8rem; font-size: 0.9rem;">
+                Выберите до 4 снарядов для сравнения:
             </p>
-            <div class="projectile-checkboxes" id="projectile-checkboxes">
-                <!-- Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ РґРёРЅР°РјРёС‡РµСЃРєРё -->
-            </div>
-            <button id="btn-compare" style="margin-top: 1rem;">РЎСЂР°РІРЅРёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Рµ СЃРЅР°СЂСЏРґС‹</button>
+            <div class="projectile-checkboxes" id="projectile-checkboxes"></div>
+            <button id="btn-compare">Сравнить выбранные</button>
             <div class="canvas-container" id="compare-canvas-container" style="display: none; margin-top: 1rem;">
                 <canvas id="compareCanvas"></canvas>
             </div>
+            <div class="canvas-controls" id="compare-controls" style="display: none;">
+                <button id="btn-download-compare">📥 Скачать сравнение PNG</button>
+            </div>
+        </div>
+
+        <div class="action-buttons" style="margin-top: 1.5rem;">
+            <button class="btn-icon" id="btn-add-to-anki" style="width: 100%; padding: 0.8rem;">
+                 Добавить расчёт в Anki
+            </button>
         </div>
 
         <footer>
-            РњРёСЂР°Р¶-Р“РµРѕ В© 2026 вЂ” РћСЃРЅРѕРІР°РЅРѕ РЅР° РѕСЂРёРіРёРЅР°Р»СЊРЅРѕРј РєР°Р»СЊРєСѓР»СЏС‚РѕСЂРµ 
+            📚 <a href="https://github.com/olekashiwa/CreateBigCannons-BallisticCalculator/blob/main/README.md" target="_blank">Инструкция (RU)</a> | 
+            <a href="https://github.com/olekashiwa/CreateBigCannons-BallisticCalculator/blob/main/README_EN.md" target="_blank">User Guide (EN)</a><br><br>
+            Мираж-Гео © 2026 — Основано на работе 
             <a href="https://github.com/Malex21/CreateBigCannons-BallisticCalculator" target="_blank">Malex21</a>
         </footer>
     </div>
 
-    <!-- Modal for custom projectile -->
+    <div class="install-prompt" id="install-prompt">
+        <p> Установить как приложение?</p>
+        <button id="btn-install">Установить</button>
+        <button id="btn-dismiss" style="background: var(--text-secondary);">Позже</button>
+    </div>
+
     <div id="custom-projectile-modal" class="modal">
         <div class="modal-content">
-            <h2>вћ• Р”РѕР±Р°РІРёС‚СЊ СЃРІРѕР№ СЃРЅР°СЂСЏРґ</h2>
-            <div class="form-group">
-                <label>РќР°Р·РІР°РЅРёРµ СЃРЅР°СЂСЏРґР°</label>
-                <input type="text" id="custom-name" placeholder="e.g. My Custom Shell">
-            </div>
-            <div class="form-group">
-                <label>РРєРѕРЅРєР° (СЌРјРѕРґР·Рё)</label>
-                <input type="text" id="custom-icon" placeholder="e.g. рџ”Ґ" maxlength="2">
-            </div>
-            <div class="form-group">
-                <label>Р“СЂР°РІРёС‚Р°С†РёСЏ (0.04 - 0.08)</label>
-                <input type="number" id="custom-gravity" step="0.001" min="0.04" max="0.08" value="0.05">
-            </div>
-            <div class="form-group">
-                <label>РЎРѕРїСЂРѕС‚РёРІР»РµРЅРёРµ РІРѕР·РґСѓС…Р° (0.95 - 1.0)</label>
-                <input type="number" id="custom-air-resistance" step="0.001" min="0.95" max="1.0" value="0.99">
-            </div>
-            <div class="form-group">
-                <label>РњРЅРѕР¶РёС‚РµР»СЊ СЃРєРѕСЂРѕСЃС‚Рё (1.5 - 3.0)</label>
-                <input type="number" id="custom-speed" step="0.1" min="1.5" max="3.0" value="2.0">
-            </div>
+            <h2>➕ Добавить снаряд</h2>
+            <div class="form-group"><label>Название</label><input type="text" id="custom-name" placeholder="e.g. My Shell"></div>
+            <div class="form-group"><label>Иконка (эмодзи)</label><input type="text" id="custom-icon" placeholder="e.g. 🔥" maxlength="2"></div>
+            <div class="form-group"><label>Гравитация (0.04 - 0.08)</label><input type="number" id="custom-gravity" step="0.001" min="0.04" max="0.08" value="0.05"></div>
+            <div class="form-group"><label>Сопротивление воздуха (0.95 - 1.0)</label><input type="number" id="custom-air-resistance" step="0.001" min="0.95" max="1.0" value="0.99"></div>
+            <div class="form-group"><label>Множитель скорости (1.5 - 3.0)</label><input type="number" id="custom-speed" step="0.1" min="1.5" max="3.0" value="2.0"></div>
             <div class="modal-buttons">
-                <button class="btn-cancel" id="btn-cancel-custom">РћС‚РјРµРЅР°</button>
-                <button id="btn-save-custom">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
+                <button class="btn-cancel" id="btn-cancel-custom">Отмена</button>
+                <button id="btn-save-custom">Сохранить</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== Р¤РР—РР§Р•РЎРљРР• РљРћРќРЎРўРђРќРўР« ====================
         const MAX_TICKS = 100000;
-
-        // Р¦РІРµС‚Р° РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ С‚СЂР°РµРєС‚РѕСЂРёР№
-        const TRAJECTORY_COLORS = [
-            '#4a90e2', '#f5a623', '#50bc54', '#c06661',
-            '#9b59b6', '#1abc9c', '#e74c3c', '#3498db'
-        ];
-
-        // РџСЂРѕС„РёР»Рё СЃРЅР°СЂСЏРґРѕРІ
-        const PROJECTILE_PROFILES = {
-            he: {
-                name: "HE Shell",
-                icon: "рџ’Ґ",
-                gravity: 0.05,
-                airResistance: 0.99,
-                speedMultiplier: 2.0
-            },
-            ap: {
-                name: "AP / Solid Shot",
-                icon: "рџ›ЎпёЏ",
-                gravity: 0.05,
-                airResistance: 0.995,
-                speedMultiplier: 2.2
-            },
-            shrapnel: {
-                name: "Shrapnel",
-                icon: "рџ”©",
-                gravity: 0.05,
-                airResistance: 0.985,
-                speedMultiplier: 1.9
-            },
-            grapeshot: {
-                name: "Grapeshot",
-                icon: "рџЋЇ",
-                gravity: 0.06,
-                airResistance: 0.97,
-                speedMultiplier: 1.7,
-                coneAngle: 15
-            },
-            smoke: {
-                name: "Smoke",
-                icon: "рџ’Ё",
-                gravity: 0.045,
-                airResistance: 0.992,
-                speedMultiplier: 1.8
-            },
-            airburst: {
-                name: "Airburst",
-                icon: "вЏ±пёЏ",
-                gravity: 0.05,
-                airResistance: 0.99,
-                speedMultiplier: 2.0
-            },
-            advanced_he: {
-                name: "Advanced HE (CBC:AT)",
-                icon: "рџ§Є",
-                gravity: 0.048,
-                airResistance: 0.991,
-                speedMultiplier: 2.1
-            },
-            custom_ap: {
-                name: "Custom AP (CBC:AT)",
-                icon: "вљЎ",
-                gravity: 0.05,
-                airResistance: 0.997,
-                speedMultiplier: 2.4
-            }
-        };
-
-        // ==================== LOCALSTORAGE & CUSTOM PROJECTILES ====================
+        const TRAJECTORY_COLORS = ['#4a90e2', '#f5a623', '#50bc54', '#c06661', '#9b59b6', '#1abc9c', '#e74c3c', '#3498db'];
         const BUILT_IN_KEYS = ['he', 'ap', 'shrapnel', 'grapeshot', 'smoke', 'airburst', 'advanced_he', 'custom_ap'];
+
+        const PROJECTILE_PROFILES = {
+            he: { name: "HE Shell", icon: "💥", gravity: 0.05, airResistance: 0.99, speedMultiplier: 2.0 },
+            ap: { name: "AP Shot", icon: "🛡️", gravity: 0.05, airResistance: 0.995, speedMultiplier: 2.2 },
+            shrapnel: { name: "Shrapnel", icon: "🔩", gravity: 0.05, airResistance: 0.985, speedMultiplier: 1.9 },
+            grapeshot: { name: "Grapeshot", icon: "🎯", gravity: 0.06, airResistance: 0.97, speedMultiplier: 1.7, coneAngle: 15 },
+            smoke: { name: "Smoke", icon: "💨", gravity: 0.045, airResistance: 0.992, speedMultiplier: 1.8 },
+            airburst: { name: "Airburst", icon: "️", gravity: 0.05, airResistance: 0.99, speedMultiplier: 2.0 },
+            advanced_he: { name: "Adv. HE (CBC:AT)", icon: "🧪", gravity: 0.048, airResistance: 0.991, speedMultiplier: 2.1 },
+            custom_ap: { name: "Custom AP (CBC:AT)", icon: "⚡", gravity: 0.05, airResistance: 0.997, speedMultiplier: 2.4 }
+        };
 
         function loadCustomProjectiles() {
             const saved = localStorage.getItem('customProjectiles');
             if (saved) {
-                try {
-                    const custom = JSON.parse(saved);
-                    Object.assign(PROJECTILE_PROFILES, custom);
-                } catch (e) {
-                    console.error('Failed to load custom projectiles:', e);
-                }
+                try { Object.assign(PROJECTILE_PROFILES, JSON.parse(saved)); } catch (e) { console.error(e); }
             }
             updateProjectileSelector();
             updateComparisonCheckboxes();
@@ -822,9 +731,7 @@
         function saveCustomProjectiles() {
             const custom = {};
             for (const key in PROJECTILE_PROFILES) {
-                if (!BUILT_IN_KEYS.includes(key)) {
-                    custom[key] = PROJECTILE_PROFILES[key];
-                }
+                if (!BUILT_IN_KEYS.includes(key)) custom[key] = PROJECTILE_PROFILES[key];
             }
             localStorage.setItem('customProjectiles', JSON.stringify(custom));
         }
@@ -840,9 +747,7 @@
                 option.textContent = `${profile.icon} ${profile.name}`;
                 select.appendChild(option);
             }
-            if (currentValue && PROJECTILE_PROFILES[currentValue]) {
-                select.value = currentValue;
-            }
+            if (currentValue && PROJECTILE_PROFILES[currentValue]) select.value = currentValue;
         }
 
         function updateComparisonCheckboxes() {
@@ -854,7 +759,7 @@
                 const item = document.createElement('div');
                 item.className = 'checkbox-item';
                 item.innerHTML = `
-                    <input type="checkbox" id="cmp-${key}" value="${key}" data-color="${TRAJECTORY_COLORS[colorIndex % TRAJECTORY_COLORS.length]}">
+                    <input type="checkbox" id="cmp-${key}" value="${key}">
                     <label for="cmp-${key}">
                         <span class="color-indicator" style="background: ${TRAJECTORY_COLORS[colorIndex % TRAJECTORY_COLORS.length]}"></span>
                         ${profile.icon} ${profile.name}
@@ -865,7 +770,6 @@
             }
         }
 
-        // ==================== LOCALSTORAGE SETTINGS ====================
         function saveToLocalStorage() {
             const data = {
                 cannonX: document.getElementById('cannon-x').value,
@@ -897,33 +801,24 @@
                     if (data.power) document.getElementById('power').value = data.power;
                     if (data.direction) document.getElementById('direction').value = data.direction;
                     if (data.projectileType) document.getElementById('projectile-type').value = data.projectileType;
-                } catch (e) {
-                    console.error('Failed to load settings:', e);
-                }
+                } catch (e) { console.error(e); }
             }
         }
 
-        // ==================== EXPORT/IMPORT ====================
         document.getElementById('btn-export-projectiles').addEventListener('click', () => {
             const custom = {};
             for (const key in PROJECTILE_PROFILES) {
-                if (!BUILT_IN_KEYS.includes(key)) {
-                    custom[key] = PROJECTILE_PROFILES[key];
-                }
+                if (!BUILT_IN_KEYS.includes(key)) custom[key] = PROJECTILE_PROFILES[key];
             }
-            if (Object.keys(custom).length === 0) {
-                alert('РќРµС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРЅР°СЂСЏРґРѕРІ РґР»СЏ СЌРєСЃРїРѕСЂС‚Р°!');
-                return;
-            }
-            const dataStr = JSON.stringify(custom, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
+            if (Object.keys(custom).length === 0) { alert('Нет пользовательских снарядов!'); return; }
+            const blob = new Blob([JSON.stringify(custom, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `custom_projectiles_${Date.now()}.json`;
+            a.download = `projectiles_${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            alert(`Р­РєСЃРїРѕСЂС‚РёСЂРѕРІР°РЅРѕ СЃРЅР°СЂСЏРґРѕРІ: ${Object.keys(custom).length}`);
+            alert(`Экспортировано: ${Object.keys(custom).length} снарядов`);
         });
 
         document.getElementById('btn-import-projectiles').addEventListener('click', () => {
@@ -948,35 +843,101 @@
                     saveCustomProjectiles();
                     updateProjectileSelector();
                     updateComparisonCheckboxes();
-                    alert(`РРјРїРѕСЂС‚РёСЂРѕРІР°РЅРѕ СЃРЅР°СЂСЏРґРѕРІ: ${count}`);
-                } catch (err) {
-                    alert('РћС€РёР±РєР° РёРјРїРѕСЂС‚Р°: РЅРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ С„Р°Р№Р»Р°!');
-                }
+                    alert(`Импортировано: ${count} снарядов`);
+                } catch (err) { alert('Ошибка импорта!'); }
             };
             reader.readAsText(file);
             e.target.value = '';
         });
 
-        // ==================== BALLISTICS CORE ====================
+        document.getElementById('btn-save-scenario').addEventListener('click', () => {
+            const scenario = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                cannon: {
+                    x: document.getElementById('cannon-x').value,
+                    y: document.getElementById('cannon-y').value,
+                    z: document.getElementById('cannon-z').value
+                },
+                target: {
+                    x: document.getElementById('target-x').value,
+                    y: document.getElementById('target-y').value,
+                    z: document.getElementById('target-z').value
+                },
+                config: {
+                    length: document.getElementById('length').value,
+                    power: document.getElementById('power').value,
+                    direction: document.getElementById('direction').value,
+                    projectileType: document.getElementById('projectile-type').value
+                },
+                customProjectiles: {}
+            };
+            for (const key in PROJECTILE_PROFILES) {
+                if (!BUILT_IN_KEYS.includes(key)) scenario.customProjectiles[key] = PROJECTILE_PROFILES[key];
+            }
+            const blob = new Blob([JSON.stringify(scenario, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scenario_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('Сценарий сохранён!');
+        });
+
+        document.getElementById('btn-load-scenario').addEventListener('click', () => {
+            document.getElementById('scenario-file').click();
+        });
+
+        document.getElementById('scenario-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const scenario = JSON.parse(event.target.result);
+                    if (scenario.cannon) {
+                        document.getElementById('cannon-x').value = scenario.cannon.x || '';
+                        document.getElementById('cannon-y').value = scenario.cannon.y || '';
+                        document.getElementById('cannon-z').value = scenario.cannon.z || '';
+                    }
+                    if (scenario.target) {
+                        document.getElementById('target-x').value = scenario.target.x || '';
+                        document.getElementById('target-y').value = scenario.target.y || '';
+                        document.getElementById('target-z').value = scenario.target.z || '';
+                    }
+                    if (scenario.config) {
+                        document.getElementById('length').value = scenario.config.length || '';
+                        document.getElementById('power').value = scenario.config.power || '';
+                        document.getElementById('direction').value = scenario.config.direction || 'north';
+                        if (scenario.config.projectileType) document.getElementById('projectile-type').value = scenario.config.projectileType;
+                    }
+                    if (scenario.customProjectiles) {
+                        Object.assign(PROJECTILE_PROFILES, scenario.customProjectiles);
+                        saveCustomProjectiles();
+                        updateProjectileSelector();
+                        updateComparisonCheckboxes();
+                    }
+                    saveToLocalStorage();
+                    validateInputs();
+                    alert('Сценарий загружен!');
+                } catch (err) { alert('Ошибка загрузки сценария!'); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
         function timeInAir(y0, y, Vy, gravity, airResistance) {
-            let t = 0;
-            let tBelow = 999999999;
+            let t = 0, tBelow = 999999999;
             if (y0 <= y) {
                 while (t < MAX_TICKS) {
-                    y0 += Vy;
-                    Vy = airResistance * Vy - gravity;
-                    t++;
-                    if (y0 > y) {
-                        tBelow = t - 1;
-                        break;
-                    }
+                    y0 += Vy; Vy = airResistance * Vy - gravity; t++;
+                    if (y0 > y) { tBelow = t - 1; break; }
                     if (Vy < 0) return [-1, -1];
                 }
             }
             while (t < MAX_TICKS) {
-                y0 += Vy;
-                Vy = airResistance * Vy - gravity;
-                t++;
+                y0 += Vy; Vy = airResistance * Vy - gravity; t++;
                 if (y0 <= y) return [tBelow, t];
             }
             return [-1, -1];
@@ -985,28 +946,20 @@
         function linspace(start, end, num) {
             const result = [];
             const delta = (end - start) / num;
-            for (let i = 0; i <= num; i++) {
-                result.push(start + i * delta);
-            }
+            for (let i = 0; i <= num; i++) result.push(start + i * delta);
             return result;
         }
 
         function calculateTrajectories(cannon, target, power, direction, length, projectileType) {
             const profile = PROJECTILE_PROFILES[projectileType] || PROJECTILE_PROFILES.he;
-            const gravity = profile.gravity;
-            const airResistance = profile.airResistance;
-            const speedMultiplier = profile.speedMultiplier;
+            const { gravity, airResistance, speedMultiplier } = profile;
             const logAirResistance = Math.log(airResistance);
-
-            const dx = cannon[0] - target[0];
-            const dz = cannon[2] - target[2];
+            const dx = cannon[0] - target[0], dz = cannon[2] - target[2];
             const distance = Math.sqrt(dx * dx + dz * dz);
             const initialSpeed = power * speedMultiplier;
-            const iterations = 5;
 
             let yaw = (dx !== 0) ? Math.atan2(dz, dx) * (180 / Math.PI) : 90;
             if (dx >= 0) yaw += 180;
-
             if (direction === 'north') yaw = (yaw + 90) % 360;
             else if (direction === 'west') yaw = (yaw + 180) % 360;
             else if (direction === 'south') yaw = (yaw + 270) % 360;
@@ -1028,15 +981,10 @@
                     const yEndBarrel = cannon[1] + Math.sin(pitchRad) * length;
                     const [tBelow, tAbove] = timeInAir(yEndBarrel, target[1], Vy, gravity, airResistance);
                     if (tBelow < 0) continue;
-                    const deltaT = Math.min(
-                        Math.abs(timeToTarget - tBelow),
-                        Math.abs(timeToTarget - tAbove)
-                    );
+                    const deltaT = Math.min(Math.abs(timeToTarget - tBelow), Math.abs(timeToTarget - tAbove));
                     deltaTimes.push([deltaT, pitch, deltaT + timeToTarget]);
                 }
-                if (deltaTimes.length === 0) {
-                    throw new Error("Р¦РµР»СЊ РЅРµРґРѕСЃС‚РёР¶РёРјР° СЃ С‚РµРєСѓС‰РµР№ РєРѕРЅС„РёРіСѓСЂР°С†РёРµР№!");
-                }
+                if (deltaTimes.length === 0) throw new Error("Цель недостижима!");
                 if (returnBoth) {
                     deltaTimes.sort((a, b) => a[1] - b[1]);
                     let min1 = deltaTimes[0], min2 = deltaTimes[deltaTimes.length - 1];
@@ -1053,7 +1001,7 @@
             }
 
             let [traj1, traj2] = tryAllAngles(-30, 60, 91, true);
-            for (let i = 0; i < iterations; i++) {
+            for (let i = 0; i < 5; i++) {
                 const range = Math.pow(10, -i);
                 traj1 = tryAllAngles(traj1[1] - range, traj1[1] + range, 21, false);
                 traj2 = tryAllAngles(traj2[1] - range, traj2[1] + range, 21, false);
@@ -1064,102 +1012,60 @@
                 if (pitch > 60.5) pitch = "Over 60";
                 else if (pitch < -29.5) pitch = "Under -30";
                 const airtime = traj[2];
-                const airtimeSec = airtime / 20;
                 const deltaTime = traj[0];
-                const fuzeTime = Math.floor(airtime + deltaTime / 2 - 10);
-                const precision = Math.round((1 - deltaTime / airtime) * 10000) / 100;
                 return {
                     yaw: Math.round(yaw * 100) / 100,
-                    pitch: pitch,
-                    airtime: airtime,
-                    airtimeSec: airtimeSec,
-                    fuzeTime: fuzeTime,
-                    precision: precision
+                    pitch, airtime,
+                    airtimeSec: airtime / 20,
+                    fuzeTime: Math.floor(airtime + deltaTime / 2 - 10),
+                    precision: Math.round((1 - deltaTime / airtime) * 10000) / 100
                 };
             };
 
             return {
                 trajectories: [processTrajectory(traj1), processTrajectory(traj2)],
-                profile: profile,
-                distance: distance,
-                rawTraj1: traj1,
-                rawTraj2: traj2,
-                initialSpeed: initialSpeed,
-                yaw: yaw
+                profile, distance, rawTraj1: traj1, rawTraj2: traj2,
+                initialSpeed, yaw
             };
         }
 
-        // ==================== 2D VISUALIZATION WITH ANIMATION ====================
-        let animationState = {
-            playing: false,
-            currentTime: 0,
-            maxTime: 0,
-            traj1: null,
-            traj2: null,
-            profile: null,
-            cannon: null,
-            target: null,
-            animationId: null
-        };
+        let animationState = { playing: false, currentTime: 0, maxTime: 0, traj1: null, traj2: null, profile: null, cannon: null, target: null, animationId: null };
 
         function drawTrajectory2D(cannon, target, traj1, traj2, profile, currentTime = null) {
             const canvas = document.getElementById('trajectoryCanvas');
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
-            const width = canvas.width;
-            const height = canvas.height;
+            const width = canvas.width, height = canvas.height;
             ctx.clearRect(0, 0, width, height);
 
             const padding = 50;
             const graphWidth = width - 2 * padding;
             const graphHeight = height - 2 * padding;
-            const maxDistance = Math.max(
-                Math.abs(cannon[0] - target[0]),
-                Math.abs(cannon[2] - target[2])
-            ) * 1.2;
+            const maxDistance = Math.max(Math.abs(cannon[0] - target[0]), Math.abs(cannon[2] - target[2])) * 1.2;
             const maxHeight = 80;
 
             const scaleX = (x) => padding + (x / maxDistance) * graphWidth;
             const scaleY = (y) => height - padding - (y / maxHeight) * graphHeight;
 
-            // РЎРµС‚РєР°
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 10; i++) {
                 const x = padding + (graphWidth / 10) * i;
                 const y = padding + (graphHeight / 10) * i;
-                ctx.beginPath();
-                ctx.moveTo(x, padding);
-                ctx.lineTo(x, height - padding);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(width - padding, y);
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, height - padding); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(width - padding, y); ctx.stroke();
             }
 
-            // РћСЃРё
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(padding, height - padding); ctx.lineTo(width - padding, height - padding); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(padding, padding); ctx.lineTo(padding, height - padding); ctx.stroke();
 
-            // РџРѕРґРїРёСЃРё
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.font = '12px Arial';
-            ctx.fillText('Р”РёСЃС‚Р°РЅС†РёСЏ (Р±Р»РѕРєРё)', width / 2 - 50, height - 10);
-            ctx.save();
-            ctx.translate(15, height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Р’С‹СЃРѕС‚Р° (Р±Р»РѕРєРё)', -30, 0);
-            ctx.restore();
+            ctx.fillText('Дистанция', width / 2 - 30, height - 10);
+            ctx.save(); ctx.translate(15, height / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('Высота', -20, 0); ctx.restore();
 
             function getTrajectoryPoint(pitch, t, initialSpeed, gravity, airResistance) {
                 const pitchRad = pitch * Math.PI / 180;
@@ -1167,93 +1073,52 @@
                 let vx = Math.cos(pitchRad) * initialSpeed;
                 let vy = Math.sin(pitchRad) * initialSpeed;
                 for (let i = 0; i < t; i++) {
-                    x += vx;
-                    y += vy;
-                    vx *= airResistance;
-                    vy = airResistance * vy - gravity;
+                    x += vx; y += vy;
+                    vx *= airResistance; vy = airResistance * vy - gravity;
                 }
                 return { x, y };
             }
 
             const pitch1 = typeof traj1.pitch === 'number' ? traj1.pitch : 30;
             const pitch2 = typeof traj2.pitch === 'number' ? traj2.pitch : 45;
+            const initialSpeed = profile.speedMultiplier * 2;
 
-            // РўСЂР°РµРєС‚РѕСЂРёСЏ 1
-            ctx.strokeStyle = '#4a90e2';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
+            ctx.strokeStyle = '#4a90e2'; ctx.lineWidth = 3; ctx.beginPath();
             let firstPoint = true;
             const maxT1 = currentTime !== null ? Math.min(currentTime, traj1.airtime) : traj1.airtime;
-            for (let t = 0; t <= maxT1; t += 1) {
-                const point = getTrajectoryPoint(pitch1, t, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
-                const x = scaleX(point.x);
-                const y = scaleY(point.y);
-                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
-                else ctx.lineTo(x, y);
+            for (let t = 0; t <= maxT1; t++) {
+                const point = getTrajectoryPoint(pitch1, t, initialSpeed, profile.gravity, profile.airResistance);
+                const x = scaleX(point.x), y = scaleY(point.y);
+                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; } else ctx.lineTo(x, y);
             }
             ctx.stroke();
 
-            // РўСЂР°РµРєС‚РѕСЂРёСЏ 2
-            ctx.strokeStyle = '#f5a623';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
+            ctx.strokeStyle = '#f5a623'; ctx.lineWidth = 3; ctx.beginPath();
             firstPoint = true;
             const maxT2 = currentTime !== null ? Math.min(currentTime, traj2.airtime) : traj2.airtime;
-            for (let t = 0; t <= maxT2; t += 1) {
-                const point = getTrajectoryPoint(pitch2, t, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
-                const x = scaleX(point.x);
-                const y = scaleY(point.y);
-                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
-                else ctx.lineTo(x, y);
+            for (let t = 0; t <= maxT2; t++) {
+                const point = getTrajectoryPoint(pitch2, t, initialSpeed, profile.gravity, profile.airResistance);
+                const x = scaleX(point.x), y = scaleY(point.y);
+                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; } else ctx.lineTo(x, y);
             }
             ctx.stroke();
 
-            // РўРѕС‡РєР° РїСѓС€РєРё
-            ctx.fillStyle = '#50bc54';
-            ctx.beginPath();
-            ctx.arc(scaleX(0), scaleY(0), 8, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.fillStyle = '#50bc54'; ctx.beginPath(); ctx.arc(scaleX(0), scaleY(0), 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#980404'; ctx.beginPath(); ctx.arc(scaleX(maxDistance * 0.8), scaleY(0), 8, 0, Math.PI * 2); ctx.fill();
 
-            // РўРѕС‡РєР° С†РµР»Рё
-            ctx.fillStyle = '#980404';
-            ctx.beginPath();
-            ctx.arc(scaleX(maxDistance * 0.8), scaleY(0), 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // РђРЅРёРјРёСЂРѕРІР°РЅРЅР°СЏ С‚РѕС‡РєР° СЃРЅР°СЂСЏРґР°
             if (currentTime !== null && currentTime > 0) {
-                const p1 = getTrajectoryPoint(pitch1, currentTime, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
-                const p2 = getTrajectoryPoint(pitch2, currentTime, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
-                
-                // РЎРЅР°СЂСЏРґ 1
-                ctx.fillStyle = '#4a90e2';
-                ctx.beginPath();
-                ctx.arc(scaleX(p1.x), scaleY(p1.y), 10, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                // РЎРЅР°СЂСЏРґ 2
-                ctx.fillStyle = '#f5a623';
-                ctx.beginPath();
-                ctx.arc(scaleX(p2.x), scaleY(p2.y), 10, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
+                const p1 = getTrajectoryPoint(pitch1, currentTime, initialSpeed, profile.gravity, profile.airResistance);
+                const p2 = getTrajectoryPoint(pitch2, currentTime, initialSpeed, profile.gravity, profile.airResistance);
+                ctx.fillStyle = '#4a90e2'; ctx.beginPath(); ctx.arc(scaleX(p1.x), scaleY(p1.y), 10, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = '#f5a623'; ctx.beginPath(); ctx.arc(scaleX(p2.x), scaleY(p2.y), 10, 0, Math.PI * 2); ctx.fill();
                 ctx.stroke();
             }
 
-            // Р›РµРіРµРЅРґР°
-            ctx.fillStyle = '#4a90e2';
-            ctx.fillRect(width - 220, 20, 20, 3);
-            ctx.fillStyle = 'white';
-            ctx.font = '12px Arial';
-            ctx.fillText('РўСЂР°РµРєС‚РѕСЂРёСЏ 1 (РЅРёР·РєР°СЏ)', width - 195, 25);
-            ctx.fillStyle = '#f5a623';
-            ctx.fillRect(width - 220, 35, 20, 3);
-            ctx.fillStyle = 'white';
-            ctx.fillText('РўСЂР°РµРєС‚РѕСЂРёСЏ 2 (РІС‹СЃРѕРєР°СЏ)', width - 195, 40);
+            ctx.fillStyle = '#4a90e2'; ctx.fillRect(width - 200, 20, 20, 3);
+            ctx.fillStyle = 'white'; ctx.font = '11px Arial'; ctx.fillText('Траектория 1', width - 175, 25);
+            ctx.fillStyle = '#f5a623'; ctx.fillRect(width - 200, 35, 20, 3);
+            ctx.fillStyle = 'white'; ctx.fillText('Траектория 2', width - 175, 40);
         }
 
         function animateTrajectory() {
@@ -1263,17 +1128,8 @@
                 animationState.currentTime = animationState.maxTime;
                 animationState.playing = false;
             }
-            drawTrajectory2D(
-                animationState.cannon,
-                animationState.target,
-                animationState.traj1,
-                animationState.traj2,
-                animationState.profile,
-                animationState.currentTime
-            );
-            if (animationState.playing) {
-                animationState.animationId = requestAnimationFrame(animateTrajectory);
-            }
+            drawTrajectory2D(animationState.cannon, animationState.target, animationState.traj1, animationState.traj2, animationState.profile, animationState.currentTime);
+            if (animationState.playing) animationState.animationId = requestAnimationFrame(animateTrajectory);
         }
 
         document.getElementById('btn-play-animation').addEventListener('click', () => {
@@ -1284,86 +1140,73 @@
 
         document.getElementById('btn-pause-animation').addEventListener('click', () => {
             animationState.playing = false;
-            if (animationState.animationId) {
-                cancelAnimationFrame(animationState.animationId);
-            }
+            if (animationState.animationId) cancelAnimationFrame(animationState.animationId);
         });
 
         document.getElementById('btn-reset-animation').addEventListener('click', () => {
             animationState.playing = false;
             animationState.currentTime = 0;
-            if (animationState.animationId) {
-                cancelAnimationFrame(animationState.animationId);
-            }
-            if (animationState.traj1) {
-                drawTrajectory2D(
-                    animationState.cannon,
-                    animationState.target,
-                    animationState.traj1,
-                    animationState.traj2,
-                    animationState.profile,
-                    0
-                );
-            }
+            if (animationState.animationId) cancelAnimationFrame(animationState.animationId);
+            if (animationState.traj1) drawTrajectory2D(animationState.cannon, animationState.target, animationState.traj1, animationState.traj2, animationState.profile, 0);
         });
 
-        // ==================== 3D VISUALIZATION (THREE.JS) ====================
-        let threeScene, threeCamera, threeRenderer, threeControls;
-        let threeObjects = [];
+        document.getElementById('btn-download-2d').addEventListener('click', () => {
+            const canvas = document.getElementById('trajectoryCanvas');
+            const link = document.createElement('a');
+            link.download = `trajectory_2d_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            alert('2D график сохранён!');
+        });
+
+        document.getElementById('btn-download-compare').addEventListener('click', () => {
+            const canvas = document.getElementById('compareCanvas');
+            const link = document.createElement('a');
+            link.download = `comparison_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            alert('Сравнение сохранено!');
+        });
+
+        let threeScene, threeCamera, threeRenderer, threeControls, threeObjects = [];
 
         function initThreeJS() {
             const container = document.getElementById('threeContainer');
             container.innerHTML = '';
-            
             threeScene = new THREE.Scene();
             threeScene.background = new THREE.Color(0x1a1a2e);
-            
-            const width = container.offsetWidth;
-            const height = container.offsetHeight;
+            const width = container.offsetWidth, height = container.offsetHeight;
             threeCamera = new THREE.PerspectiveCamera(60, width / height, 0.1, 10000);
             threeCamera.position.set(100, 80, 100);
-            
             threeRenderer = new THREE.WebGLRenderer({ antialias: true });
             threeRenderer.setSize(width, height);
             container.appendChild(threeRenderer.domElement);
-            
             threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
             threeControls.enableDamping = true;
             threeControls.dampingFactor = 0.05;
-            
-            // РЎРІРµС‚
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            threeScene.add(ambientLight);
+            threeScene.add(new THREE.AmbientLight(0xffffff, 0.6));
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
             directionalLight.position.set(100, 200, 100);
             threeScene.add(directionalLight);
-            
-            // РЎРµС‚РєР° Р·РµРјР»Рё
-            const gridHelper = new THREE.GridHelper(500, 50, 0x444444, 0x222222);
-            threeScene.add(gridHelper);
-            
+            threeScene.add(new THREE.GridHelper(500, 50, 0x444444, 0x222222));
             animateThree();
         }
 
         function animateThree() {
             requestAnimationFrame(animateThree);
             if (threeControls) threeControls.update();
-            if (threeRenderer && threeScene && threeCamera) {
-                threeRenderer.render(threeScene, threeCamera);
-            }
+            if (threeRenderer && threeScene && threeCamera) threeRenderer.render(threeScene, threeCamera);
         }
 
         function drawTrajectory3D(cannon, target, traj1, traj2, profile) {
             if (!threeScene) initThreeJS();
-            
-            // РћС‡РёСЃС‚РєР° СЃС‚Р°СЂС‹С… РѕР±СЉРµРєС‚РѕРІ
             threeObjects.forEach(obj => threeScene.remove(obj));
             threeObjects = [];
-            
+
             const pitch1 = typeof traj1.pitch === 'number' ? traj1.pitch : 30;
             const pitch2 = typeof traj2.pitch === 'number' ? traj2.pitch : 45;
             const initialSpeed = profile.speedMultiplier * 2;
-            
+
             function createTrajectoryLine(pitch, color, airtime) {
                 const points = [];
                 let x = 0, y = 0, z = 0;
@@ -1371,120 +1214,87 @@
                 let vx = Math.cos(pitchRad) * initialSpeed;
                 let vy = Math.sin(pitchRad) * initialSpeed;
                 let vz = 0;
-                
                 for (let t = 0; t <= airtime; t++) {
                     points.push(new THREE.Vector3(x, y, z));
-                    x += vx;
-                    y += vy;
-                    z += vz;
-                    vx *= profile.airResistance;
-                    vy = profile.airResistance * vy - profile.gravity;
-                    vz *= profile.airResistance;
+                    x += vx; y += vy; z += vz;
+                    vx *= profile.airResistance; vy = profile.airResistance * vy - profile.gravity; vz *= profile.airResistance;
                 }
-                
                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const material = new THREE.LineBasicMaterial({ color: color, linewidth: 3 });
-                const line = new THREE.Line(geometry, material);
-                return line;
+                const material = new THREE.LineBasicMaterial({ color });
+                return new THREE.Line(geometry, material);
             }
-            
-            // РўСЂР°РµРєС‚РѕСЂРёСЏ 1 (СЃРёРЅСЏСЏ)
+
             const line1 = createTrajectoryLine(pitch1, 0x4a90e2, traj1.airtime);
-            threeScene.add(line1);
-            threeObjects.push(line1);
-            
-            // РўСЂР°РµРєС‚РѕСЂРёСЏ 2 (РѕСЂР°РЅР¶РµРІР°СЏ)
+            threeScene.add(line1); threeObjects.push(line1);
             const line2 = createTrajectoryLine(pitch2, 0xf5a623, traj2.airtime);
-            threeScene.add(line2);
-            threeObjects.push(line2);
-            
-            // РўРѕС‡РєР° РїСѓС€РєРё (Р·РµР»С‘РЅР°СЏ СЃС„РµСЂР°)
+            threeScene.add(line2); threeObjects.push(line2);
+
             const cannonGeo = new THREE.SphereGeometry(3, 16, 16);
             const cannonMat = new THREE.MeshPhongMaterial({ color: 0x50bc54 });
             const cannonMesh = new THREE.Mesh(cannonGeo, cannonMat);
-            cannonMesh.position.set(0, 0, 0);
-            threeScene.add(cannonMesh);
-            threeObjects.push(cannonMesh);
-            
-            // РўРѕС‡РєР° С†РµР»Рё (РєСЂР°СЃРЅР°СЏ СЃС„РµСЂР°)
+            threeScene.add(cannonMesh); threeObjects.push(cannonMesh);
+
             const targetGeo = new THREE.SphereGeometry(3, 16, 16);
             const targetMat = new THREE.MeshPhongMaterial({ color: 0x980404 });
             const targetMesh = new THREE.Mesh(targetGeo, targetMat);
-            const dx = target[0] - cannon[0];
-            const dz = target[2] - cannon[2];
+            const dx = target[0] - cannon[0], dz = target[2] - cannon[2];
             targetMesh.position.set(dx, target[1] - cannon[1], dz);
-            threeScene.add(targetMesh);
-            threeObjects.push(targetMesh);
-            
-            // Р¦РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµ РєР°РјРµСЂС‹
+            threeScene.add(targetMesh); threeObjects.push(targetMesh);
+
             const maxDist = Math.sqrt(dx * dx + dz * dz);
             threeCamera.position.set(maxDist * 0.5, maxDist * 0.4, maxDist * 0.5);
             threeControls.target.set(maxDist * 0.4, 20, dz * 0.5);
             threeControls.update();
         }
 
-        // ==================== COMPARISON VISUALIZATION ====================
+        document.getElementById('btn-download-3d').addEventListener('click', () => {
+            if (threeRenderer) {
+                threeRenderer.render(threeScene, threeCamera);
+                const link = document.createElement('a');
+                link.download = `trajectory_3d_${Date.now()}.png`;
+                link.href = threeRenderer.domElement.toDataURL('image/png');
+                link.click();
+                alert('3D визуализация сохранена!');
+            }
+        });
+
         function drawComparison(trajectories) {
             const canvas = document.getElementById('compareCanvas');
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
-            const width = canvas.width;
-            const height = canvas.height;
+            const width = canvas.width, height = canvas.height;
             ctx.clearRect(0, 0, width, height);
 
             const padding = 50;
             const graphWidth = width - 2 * padding;
             const graphHeight = height - 2 * padding;
-
-            // РќР°С…РѕРґРёРј РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РґРёСЃС‚Р°РЅС†РёСЋ СЃСЂРµРґРё РІСЃРµС… С‚СЂР°РµРєС‚РѕСЂРёР№
             let maxDistance = 0;
-            trajectories.forEach(t => {
-                if (t.distance > maxDistance) maxDistance = t.distance;
-            });
+            trajectories.forEach(t => { if (t.distance > maxDistance) maxDistance = t.distance; });
             maxDistance *= 1.2;
             const maxHeight = 100;
 
             const scaleX = (x) => padding + (x / maxDistance) * graphWidth;
             const scaleY = (y) => height - padding - (y / maxHeight) * graphHeight;
 
-            // РЎРµС‚РєР°
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 10; i++) {
                 const x = padding + (graphWidth / 10) * i;
                 const y = padding + (graphHeight / 10) * i;
-                ctx.beginPath();
-                ctx.moveTo(x, padding);
-                ctx.lineTo(x, height - padding);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(width - padding, y);
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, height - padding); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(width - padding, y); ctx.stroke();
             }
 
-            // РћСЃРё
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(padding, height - padding); ctx.lineTo(width - padding, height - padding); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(padding, padding); ctx.lineTo(padding, height - padding); ctx.stroke();
 
-            // РџРѕРґРїРёСЃРё
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.font = '12px Arial';
-            ctx.fillText('Р”РёСЃС‚Р°РЅС†РёСЏ (Р±Р»РѕРєРё)', width / 2 - 50, height - 10);
-            ctx.save();
-            ctx.translate(15, height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Р’С‹СЃРѕС‚Р° (Р±Р»РѕРєРё)', -30, 0);
-            ctx.restore();
+            ctx.fillText('Дистанция', width / 2 - 30, height - 10);
+            ctx.save(); ctx.translate(15, height / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('Высота', -20, 0); ctx.restore();
 
             function getTrajectoryPoint(pitch, t, initialSpeed, gravity, airResistance) {
                 const pitchRad = pitch * Math.PI / 180;
@@ -1492,60 +1302,41 @@
                 let vx = Math.cos(pitchRad) * initialSpeed;
                 let vy = Math.sin(pitchRad) * initialSpeed;
                 for (let i = 0; i < t; i++) {
-                    x += vx;
-                    y += vy;
-                    vx *= airResistance;
-                    vy = airResistance * vy - gravity;
+                    x += vx; y += vy;
+                    vx *= airResistance; vy = airResistance * vy - gravity;
                 }
                 return { x, y };
             }
 
-            // Р РёСЃСѓРµРј РєР°Р¶РґСѓСЋ С‚СЂР°РµРєС‚РѕСЂРёСЋ
             trajectories.forEach((t, index) => {
                 const color = TRAJECTORY_COLORS[index % TRAJECTORY_COLORS.length];
                 const pitch = typeof t.traj.pitch === 'number' ? t.traj.pitch : 30;
                 const initialSpeed = t.profile.speedMultiplier * 2;
-                
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2.5;
-                ctx.beginPath();
+                ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
                 let firstPoint = true;
-                for (let time = 0; time <= t.traj.airtime; time += 1) {
+                for (let time = 0; time <= t.traj.airtime; time++) {
                     const point = getTrajectoryPoint(pitch, time, initialSpeed, t.profile.gravity, t.profile.airResistance);
-                    const x = scaleX(point.x);
-                    const y = scaleY(point.y);
-                    if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
-                    else ctx.lineTo(x, y);
+                    const x = scaleX(point.x), y = scaleY(point.y);
+                    if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; } else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
             });
 
-            // Р›РµРіРµРЅРґР°
             let legendY = 20;
             trajectories.forEach((t, index) => {
                 const color = TRAJECTORY_COLORS[index % TRAJECTORY_COLORS.length];
-                ctx.fillStyle = color;
-                ctx.fillRect(width - 250, legendY, 20, 3);
-                ctx.fillStyle = 'white';
-                ctx.font = '11px Arial';
-                const name = `${t.profile.icon} ${t.profile.name}`;
-                ctx.fillText(name.substring(0, 25), width - 225, legendY + 5);
+                ctx.fillStyle = color; ctx.fillRect(width - 220, legendY, 20, 3);
+                ctx.fillStyle = 'white'; ctx.font = '11px Arial';
+                ctx.fillText(`${t.profile.icon} ${t.profile.name}`.substring(0, 22), width - 195, legendY + 5);
                 legendY += 18;
             });
         }
 
         document.getElementById('btn-compare').addEventListener('click', () => {
             const checkboxes = document.querySelectorAll('#projectile-checkboxes input[type="checkbox"]:checked');
-            if (checkboxes.length === 0) {
-                alert('Р’С‹Р±РµСЂРёС‚Рµ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ СЃРЅР°СЂСЏРґ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ!');
-                return;
-            }
-            if (checkboxes.length > 4) {
-                alert('РњРѕР¶РЅРѕ СЃСЂР°РІРЅРёС‚СЊ РјР°РєСЃРёРјСѓРј 4 СЃРЅР°СЂСЏРґР° РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ!');
-                return;
-            }
+            if (checkboxes.length === 0) { alert('Выберите хотя бы один снаряд!'); return; }
+            if (checkboxes.length > 4) { alert('Максимум 4 снаряда!'); return; }
 
-            // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹
             const cannon = [
                 parseInt(document.getElementById('cannon-x').value) || 0,
                 parseInt(document.getElementById('cannon-y').value) || 64,
@@ -1561,29 +1352,80 @@
             const direction = document.getElementById('direction').value;
 
             const trajectories = [];
-            checkboxes.forEach((cb, index) => {
+            checkboxes.forEach((cb) => {
                 try {
                     const result = calculateTrajectories(cannon, target, power, direction, length, cb.value);
-                    trajectories.push({
-                        traj: result.trajectories[0], // РСЃРїРѕР»СЊР·СѓРµРј РЅРёР·РєСѓСЋ С‚СЂР°РµРєС‚РѕСЂРёСЋ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ
-                        profile: result.profile,
-                        distance: result.distance
-                    });
-                } catch (e) {
-                    console.warn(`РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°СЃСЃС‡РёС‚Р°С‚СЊ РґР»СЏ ${cb.value}:`, e.message);
-                }
+                    trajectories.push({ traj: result.trajectories[0], profile: result.profile, distance: result.distance });
+                } catch (e) { console.warn(e.message); }
             });
 
-            if (trajectories.length === 0) {
-                alert('РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°СЃСЃС‡РёС‚Р°С‚СЊ РЅРё РѕРґРЅСѓ С‚СЂР°РµРєС‚РѕСЂРёСЋ!');
-                return;
-            }
-
+            if (trajectories.length === 0) { alert('Не удалось рассчитать!'); return; }
             document.getElementById('compare-canvas-container').style.display = 'block';
+            document.getElementById('compare-controls').style.display = 'flex';
             drawComparison(trajectories);
         });
 
-        // ==================== UI LOGIC ====================
+        document.getElementById('btn-add-to-anki').addEventListener('click', async () => {
+            const cannonX = document.getElementById('cannon-x').value;
+            const targetX = document.getElementById('target-x').value;
+            if (!cannonX || !targetX) { alert('Сначала выполните расчёт!'); return; }
+
+            const projectileType = document.getElementById('projectile-type').value;
+            const profile = PROJECTILE_PROFILES[projectileType];
+            const yaw1 = document.getElementById('yaw-1').textContent;
+            const pitch1 = document.getElementById('pitch-1').textContent;
+            const fuze1 = document.getElementById('fuze-1').textContent;
+
+            const cardData = {
+                action: 'addNote',
+                version: 6,
+                params: {
+                    note: {
+                        deckName: 'Мираж-Гео',
+                        modelName: 'Basic',
+                        fields: {
+                            Front: `<b>${profile.icon} ${profile.name}</b><br>Пушка: (${cannonX}, ${document.getElementById('cannon-y').value}, ${document.getElementById('cannon-z').value})<br>Цель: (${targetX}, ${document.getElementById('target-y').value}, ${document.getElementById('target-z').value})`,
+                            Back: `<b>Траектория 1 (Низкая):</b><br>Yaw: ${yaw1}<br>Pitch: ${pitch1}<br>Взрыватель: ${fuze1}<br><br><i>Длина ствола: ${document.getElementById('length').value} блоков<br>Заряды: ${document.getElementById('power').value}<br>Направление: ${document.getElementById('direction').value}</i>`
+                        },
+                        tags: ['mirage-geo', 'ballistics', projectileType]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch('http://localhost:8765', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cardData)
+                });
+                const result = await response.json();
+                if (result.error) throw new Error(result.error);
+                alert('✅ Карточка добавлена в Anki!');
+            } catch (error) {
+                alert('❌ Ошибка подключения к Anki. Убедитесь, что Anki запущен с AnkiConnect.\n\n' + error.message);
+            }
+        });
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-prompt').style.display = 'block';
+        });
+
+        document.getElementById('btn-install').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('install-prompt').style.display = 'none';
+                deferredPrompt = null;
+            }
+        });
+
+        document.getElementById('btn-dismiss').addEventListener('click', () => {
+            document.getElementById('install-prompt').style.display = 'none';
+        });
+
         const inputs = ['cannon-x', 'cannon-y', 'cannon-z', 'target-x', 'target-y', 'target-z', 'power', 'length'];
         const btn = document.getElementById('calculate-btn');
         const status = document.getElementById('status');
@@ -1628,8 +1470,7 @@
 
                 const result = calculateTrajectories(cannon, target, power, direction, length, projectileType);
                 displayResults(result);
-                
-                // 2D РІРёР·СѓР°Р»РёР·Р°С†РёСЏ
+
                 animationState.traj1 = result.trajectories[0];
                 animationState.traj2 = result.trajectories[1];
                 animationState.profile = result.profile;
@@ -1638,15 +1479,13 @@
                 animationState.maxTime = Math.max(result.trajectories[0].airtime, result.trajectories[1].airtime);
                 animationState.currentTime = 0;
                 animationState.playing = false;
-                
+
                 drawTrajectory2D(cannon, target, result.trajectories[0], result.trajectories[1], result.profile, 0);
                 document.getElementById('visualization-section').style.display = 'block';
 
-                // 3D РІРёР·СѓР°Р»РёР·Р°С†РёСЏ
                 drawTrajectory3D(cannon, target, result.trajectories[0], result.trajectories[1], result.profile);
                 document.getElementById('three-section').style.display = 'block';
 
-                // Grapeshot info
                 if (projectileType === 'grapeshot') {
                     const coneAngle = result.profile.coneAngle || 15;
                     const coneRadius = result.distance * Math.tan(coneAngle * Math.PI / 180);
@@ -1657,10 +1496,10 @@
                     document.getElementById('grapeshot-info').style.display = 'none';
                 }
 
-                status.textContent = `вњ… Р Р°СЃСЃС‡РёС‚Р°РЅРѕ РґР»СЏ ${result.profile.icon} ${result.profile.name}`;
+                status.textContent = `✅ Рассчитано для ${result.profile.icon} ${result.profile.name}`;
                 status.className = 'success';
             } catch (e) {
-                status.textContent = "вќЊ " + e.message;
+                status.textContent = "❌ " + e.message;
                 status.className = 'error';
                 document.getElementById('visualization-section').style.display = 'none';
                 document.getElementById('three-section').style.display = 'none';
@@ -1673,21 +1512,20 @@
             document.getElementById('results').style.display = 'grid';
             document.getElementById('proj-badge-1').textContent = `${profile.icon} ${profile.name}`;
             document.getElementById('proj-badge-2').textContent = `${profile.icon} ${profile.name}`;
-            
+
             const updateCard = (prefix, t) => {
-                document.getElementById(`yaw-${prefix}`).textContent = `${t.yaw.toFixed(2)}В°`;
+                document.getElementById(`yaw-${prefix}`).textContent = `${t.yaw.toFixed(2)}°`;
                 const pitchEl = document.getElementById(`pitch-${prefix}`);
-                pitchEl.textContent = typeof t.pitch === 'string' ? t.pitch : `${t.pitch.toFixed(2)}В°`;
+                pitchEl.textContent = typeof t.pitch === 'string' ? t.pitch : `${t.pitch.toFixed(2)}°`;
                 pitchEl.className = typeof t.pitch === 'string' ? 'result-value warning' : 'result-value';
-                document.getElementById(`airtime-${prefix}`).textContent = `${t.airtime} С‚РёРєРѕРІ (${t.airtimeSec.toFixed(2)}СЃ)`;
-                document.getElementById(`fuze-${prefix}`).textContent = `${t.fuzeTime} С‚РёРєРѕРІ`;
+                document.getElementById(`airtime-${prefix}`).textContent = `${t.airtime} тиков (${t.airtimeSec.toFixed(2)}с)`;
+                document.getElementById(`fuze-${prefix}`).textContent = `${t.fuzeTime} тиков`;
                 document.getElementById(`precision-${prefix}`).textContent = `${t.precision}%`;
             };
             updateCard('1', t1);
             updateCard('2', t2);
         }
 
-        // ==================== MODAL ====================
         const modal = document.getElementById('custom-projectile-modal');
         document.getElementById('btn-add-projectile').addEventListener('click', () => modal.classList.add('active'));
         document.getElementById('btn-cancel-custom').addEventListener('click', () => modal.classList.remove('active'));
@@ -1695,15 +1533,15 @@
 
         document.getElementById('btn-save-custom').addEventListener('click', () => {
             const name = document.getElementById('custom-name').value.trim();
-            const icon = document.getElementById('custom-icon').value.trim() || 'рџ”№';
+            const icon = document.getElementById('custom-icon').value.trim() || '';
             const gravity = parseFloat(document.getElementById('custom-gravity').value);
             const airResistance = parseFloat(document.getElementById('custom-air-resistance').value);
             const speedMultiplier = parseFloat(document.getElementById('custom-speed').value);
 
-            if (!name) { alert('Р’РІРµРґРёС‚Рµ РЅР°Р·РІР°РЅРёРµ СЃРЅР°СЂСЏРґР°'); return; }
-            if (gravity < 0.04 || gravity > 0.08) { alert('Р“СЂР°РІРёС‚Р°С†РёСЏ: 0.04 - 0.08'); return; }
-            if (airResistance < 0.95 || airResistance > 1.0) { alert('РЎРѕРїСЂРѕС‚РёРІР»РµРЅРёРµ: 0.95 - 1.0'); return; }
-            if (speedMultiplier < 1.5 || speedMultiplier > 3.0) { alert('РЎРєРѕСЂРѕСЃС‚СЊ: 1.5 - 3.0'); return; }
+            if (!name) { alert('Введите название'); return; }
+            if (gravity < 0.04 || gravity > 0.08) { alert('Гравитация: 0.04 - 0.08'); return; }
+            if (airResistance < 0.95 || airResistance > 1.0) { alert('Сопротивление: 0.95 - 1.0'); return; }
+            if (speedMultiplier < 1.5 || speedMultiplier > 3.0) { alert('Скорость: 1.5 - 3.0'); return; }
 
             const key = 'custom_' + Date.now();
             PROJECTILE_PROFILES[key] = { name, icon, gravity, airResistance, speedMultiplier };
@@ -1716,17 +1554,19 @@
             document.getElementById('custom-icon').value = '';
         });
 
-        // РћР±СЂР°Р±РѕС‚РєР° РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР° РѕРєРЅР° РґР»СЏ Three.js
         window.addEventListener('resize', () => {
             if (threeRenderer && threeCamera) {
                 const container = document.getElementById('threeContainer');
-                const width = container.offsetWidth;
-                const height = container.offsetHeight;
+                const width = container.offsetWidth, height = container.offsetHeight;
                 threeRenderer.setSize(width, height);
                 threeCamera.aspect = width / height;
                 threeCamera.updateProjectionMatrix();
             }
         });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+        }
     </script>
 </body>
 </html>
