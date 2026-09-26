@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мираж-Гео | Ballistic Calculator</title>
+    <title>Мираж-Гео | Ballistic Calculator Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         :root {
             --bg-primary: #1a1a2e;
@@ -117,7 +119,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .options-row .option-group {
@@ -135,20 +137,27 @@
             flex: 1;
         }
 
-        .btn-add-projectile {
+        .btn-icon {
             padding: 0.7rem;
             background: var(--accent);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1rem;
             transition: background 0.2s;
             white-space: nowrap;
         }
 
-        .btn-add-projectile:hover {
+        .btn-icon:hover {
             background: var(--accent-hover);
+        }
+
+        .projectile-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
         }
 
         button {
@@ -169,10 +178,6 @@
             transform: translateY(-2px);
         }
 
-        button:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -191,11 +196,6 @@
             border-radius: 12px;
             border-left: 4px solid var(--accent);
             border: 1px solid var(--border);
-            transition: transform 0.2s;
-        }
-
-        .trajectory-card:hover {
-            transform: translateY(-3px);
         }
 
         .trajectory-card h3 {
@@ -269,10 +269,8 @@
             white-space: nowrap;
             z-index: 100;
             margin-bottom: 5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
-        /* Canvas visualization */
         .visualization-section {
             margin-top: 2rem;
             background: var(--bg-card);
@@ -289,15 +287,42 @@
             padding-bottom: 0.5rem;
         }
 
-        #trajectoryCanvas {
+        .canvas-container {
+            position: relative;
             width: 100%;
             height: 400px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #trajectoryCanvas, #compareCanvas {
+            width: 100%;
+            height: 100%;
             display: block;
         }
 
-        /* Grapeshot cone visualization */
+        #threeContainer {
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .canvas-controls button {
+            width: auto;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
         .grapeshot-info {
             margin-top: 1rem;
             padding: 1rem;
@@ -338,6 +363,8 @@
             max-width: 500px;
             border: 1px solid var(--border);
             animation: slideIn 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes fadeIn {
@@ -392,6 +419,63 @@
             background: #808080;
         }
 
+        /* Comparison section */
+        .comparison-section {
+            margin-top: 2rem;
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-section h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-hover);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .projectile-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(30, 83, 141, 0.3);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .color-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
         footer {
             text-align: center;
             margin-top: 2rem;
@@ -429,8 +513,8 @@
 </head>
 <body>
     <div class="container">
-        <h1> Мираж-Гео</h1>
-        <p class="subtitle">Create Big Cannons — Ballistic Calculator</p>
+        <h1>🎯 Мираж-Гео</h1>
+        <p class="subtitle">Create Big Cannons — Ballistic Calculator Pro</p>
 
         <div class="input-grid">
             <div class="input-section">
@@ -496,18 +580,16 @@
                     </label>
                     <div class="projectile-selector">
                         <select id="projectile-type">
-                            <option value="he"> HE Shell (фугасный)</option>
-                            <option value="ap">🛡️ AP / Solid Shot (бронебойный)</option>
-                            <option value="shrapnel">🔩 Shrapnel (шрапнель)</option>
-                            <option value="grapeshot">🎯 Grapeshot (картечь)</option>
-                            <option value="smoke">💨 Smoke (дымовой)</option>
-                            <option value="airburst">⏱️ Airburst (с подрывом)</option>
-                            <option value="advanced_he">🧪 Advanced HE (CBC:AT)</option>
-                            <option value="custom_ap"> Custom AP (CBC:AT)</option>
+                            <!-- Заполняется динамически -->
                         </select>
-                        <button class="btn-add-projectile" id="btn-add-projectile" title="Добавить свой снаряд">➕</button>
+                        <button class="btn-icon" id="btn-add-projectile" title="Добавить свой снаряд">➕</button>
                     </div>
                 </div>
+            </div>
+            <div class="projectile-actions">
+                <button class="btn-icon" id="btn-export-projectiles" style="width: auto; padding: 0.5rem 1rem;">📤 Экспорт снарядов</button>
+                <button class="btn-icon" id="btn-import-projectiles" style="width: auto; padding: 0.5rem 1rem;"> Импорт снарядов</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
             </div>
         </div>
 
@@ -541,7 +623,7 @@
             </div>
 
             <div class="trajectory-card">
-                <h3> Траектория 2 (Высокая / Навесная) <span class="projectile-badge" id="proj-badge-2">—</span></h3>
+                <h3>🌙 Траектория 2 (Высокая / Навесная) <span class="projectile-badge" id="proj-badge-2">—</span></h3>
                 <div class="result-row">
                     <span class="result-label">Yaw (горизонт.):</span>
                     <span class="result-value" id="yaw-2">—</span>
@@ -565,14 +647,45 @@
             </div>
         </div>
 
-        <!-- Visualization Section -->
+        <!-- 2D Visualization with Animation -->
         <div class="visualization-section" id="visualization-section" style="display: none;">
-            <h2>📊 Визуализация траектории</h2>
-            <canvas id="trajectoryCanvas"></canvas>
+            <h2>📊 2D Визуализация траектории</h2>
+            <div class="canvas-container">
+                <canvas id="trajectoryCanvas"></canvas>
+            </div>
+            <div class="canvas-controls">
+                <button id="btn-play-animation">▶️ Play</button>
+                <button id="btn-pause-animation">⏸️ Pause</button>
+                <button id="btn-reset-animation">🔄 Reset</button>
+            </div>
             <div id="grapeshot-info" class="grapeshot-info" style="display: none;">
                 <h3>🎯 Конус поражения картечи</h3>
                 <p>Угол разлёта: <strong id="cone-angle">—</strong>°</p>
                 <p>Радиус поражения на дистанции: <strong id="cone-radius">—</strong> блоков</p>
+            </div>
+        </div>
+
+        <!-- 3D Visualization -->
+        <div class="visualization-section" id="three-section" style="display: none;">
+            <h2>🌐 3D Визуализация (Three.js)</h2>
+            <div id="threeContainer"></div>
+            <p style="text-align: center; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                🖱️ ЛКМ — вращение | Колёсико — зум | ПКМ — перемещение
+            </p>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="comparison-section" id="comparison-section">
+            <h2>📊 Сравнение траекторий разных снарядов</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Выберите до 4 снарядов для сравнения их траекторий на одном графике:
+            </p>
+            <div class="projectile-checkboxes" id="projectile-checkboxes">
+                <!-- Заполняется динамически -->
+            </div>
+            <button id="btn-compare" style="margin-top: 1rem;">Сравнить выбранные снаряды</button>
+            <div class="canvas-container" id="compare-canvas-container" style="display: none; margin-top: 1rem;">
+                <canvas id="compareCanvas"></canvas>
             </div>
         </div>
 
@@ -585,7 +698,7 @@
     <!-- Modal for custom projectile -->
     <div id="custom-projectile-modal" class="modal">
         <div class="modal-content">
-            <h2> Добавить свой снаряд</h2>
+            <h2>➕ Добавить свой снаряд</h2>
             <div class="form-group">
                 <label>Название снаряда</label>
                 <input type="text" id="custom-name" placeholder="e.g. My Custom Shell">
@@ -615,10 +728,13 @@
 
     <script>
         // ==================== ФИЗИЧЕСКИЕ КОНСТАНТЫ ====================
-        const BASE_GRAVITY = 0.05;
-        const BASE_AIR_RESISTANCE = 0.99;
-        const BASE_SPEED_MULTIPLIER = 2;
         const MAX_TICKS = 100000;
+
+        // Цвета для сравнения траекторий
+        const TRAJECTORY_COLORS = [
+            '#4a90e2', '#f5a623', '#50bc54', '#c06661',
+            '#9b59b6', '#1abc9c', '#e74c3c', '#3498db'
+        ];
 
         // Профили снарядов
         const PROJECTILE_PROFILES = {
@@ -649,7 +765,7 @@
                 gravity: 0.06,
                 airResistance: 0.97,
                 speedMultiplier: 1.7,
-                coneAngle: 15 // Угол разлёта картечи в градусах
+                coneAngle: 15
             },
             smoke: {
                 name: "Smoke",
@@ -681,20 +797,27 @@
             }
         };
 
-        // Загрузка пользовательских снарядов из localStorage
+        // ==================== LOCALSTORAGE & CUSTOM PROJECTILES ====================
+        const BUILT_IN_KEYS = ['he', 'ap', 'shrapnel', 'grapeshot', 'smoke', 'airburst', 'advanced_he', 'custom_ap'];
+
         function loadCustomProjectiles() {
             const saved = localStorage.getItem('customProjectiles');
             if (saved) {
-                const custom = JSON.parse(saved);
-                Object.assign(PROJECTILE_PROFILES, custom);
-                updateProjectileSelector();
+                try {
+                    const custom = JSON.parse(saved);
+                    Object.assign(PROJECTILE_PROFILES, custom);
+                } catch (e) {
+                    console.error('Failed to load custom projectiles:', e);
+                }
             }
+            updateProjectileSelector();
+            updateComparisonCheckboxes();
         }
 
         function saveCustomProjectiles() {
             const custom = {};
             for (const key in PROJECTILE_PROFILES) {
-                if (!['he', 'ap', 'shrapnel', 'grapeshot', 'smoke', 'airburst', 'advanced_he', 'custom_ap'].includes(key)) {
+                if (!BUILT_IN_KEYS.includes(key)) {
                     custom[key] = PROJECTILE_PROFILES[key];
                 }
             }
@@ -703,6 +826,7 @@
 
         function updateProjectileSelector() {
             const select = document.getElementById('projectile-type');
+            const currentValue = select.value;
             select.innerHTML = '';
             for (const key in PROJECTILE_PROFILES) {
                 const profile = PROJECTILE_PROFILES[key];
@@ -711,9 +835,32 @@
                 option.textContent = `${profile.icon} ${profile.name}`;
                 select.appendChild(option);
             }
+            if (currentValue && PROJECTILE_PROFILES[currentValue]) {
+                select.value = currentValue;
+            }
         }
 
-        // ==================== LOCALSTORAGE ====================
+        function updateComparisonCheckboxes() {
+            const container = document.getElementById('projectile-checkboxes');
+            container.innerHTML = '';
+            let colorIndex = 0;
+            for (const key in PROJECTILE_PROFILES) {
+                const profile = PROJECTILE_PROFILES[key];
+                const item = document.createElement('div');
+                item.className = 'checkbox-item';
+                item.innerHTML = `
+                    <input type="checkbox" id="cmp-${key}" value="${key}" data-color="${TRAJECTORY_COLORS[colorIndex % TRAJECTORY_COLORS.length]}">
+                    <label for="cmp-${key}">
+                        <span class="color-indicator" style="background: ${TRAJECTORY_COLORS[colorIndex % TRAJECTORY_COLORS.length]}"></span>
+                        ${profile.icon} ${profile.name}
+                    </label>
+                `;
+                container.appendChild(item);
+                colorIndex++;
+            }
+        }
+
+        // ==================== LOCALSTORAGE SETTINGS ====================
         function saveToLocalStorage() {
             const data = {
                 cannonX: document.getElementById('cannon-x').value,
@@ -733,26 +880,82 @@
         function loadFromLocalStorage() {
             const saved = localStorage.getItem('ballisticCalculatorSettings');
             if (saved) {
-                const data = JSON.parse(saved);
-                if (data.cannonX) document.getElementById('cannon-x').value = data.cannonX;
-                if (data.cannonY) document.getElementById('cannon-y').value = data.cannonY;
-                if (data.cannonZ) document.getElementById('cannon-z').value = data.cannonZ;
-                if (data.targetX) document.getElementById('target-x').value = data.targetX;
-                if (data.targetY) document.getElementById('target-y').value = data.targetY;
-                if (data.targetZ) document.getElementById('target-z').value = data.targetZ;
-                if (data.length) document.getElementById('length').value = data.length;
-                if (data.power) document.getElementById('power').value = data.power;
-                if (data.direction) document.getElementById('direction').value = data.direction;
-                if (data.projectileType) document.getElementById('projectile-type').value = data.projectileType;
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.cannonX) document.getElementById('cannon-x').value = data.cannonX;
+                    if (data.cannonY) document.getElementById('cannon-y').value = data.cannonY;
+                    if (data.cannonZ) document.getElementById('cannon-z').value = data.cannonZ;
+                    if (data.targetX) document.getElementById('target-x').value = data.targetX;
+                    if (data.targetY) document.getElementById('target-y').value = data.targetY;
+                    if (data.targetZ) document.getElementById('target-z').value = data.targetZ;
+                    if (data.length) document.getElementById('length').value = data.length;
+                    if (data.power) document.getElementById('power').value = data.power;
+                    if (data.direction) document.getElementById('direction').value = data.direction;
+                    if (data.projectileType) document.getElementById('projectile-type').value = data.projectileType;
+                } catch (e) {
+                    console.error('Failed to load settings:', e);
+                }
             }
         }
 
-        // ==================== ЯДРО РАСЧЁТА ====================
-        
+        // ==================== EXPORT/IMPORT ====================
+        document.getElementById('btn-export-projectiles').addEventListener('click', () => {
+            const custom = {};
+            for (const key in PROJECTILE_PROFILES) {
+                if (!BUILT_IN_KEYS.includes(key)) {
+                    custom[key] = PROJECTILE_PROFILES[key];
+                }
+            }
+            if (Object.keys(custom).length === 0) {
+                alert('Нет пользовательских снарядов для экспорта!');
+                return;
+            }
+            const dataStr = JSON.stringify(custom, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `custom_projectiles_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert(`Экспортировано снарядов: ${Object.keys(custom).length}`);
+        });
+
+        document.getElementById('btn-import-projectiles').addEventListener('click', () => {
+            document.getElementById('import-file').click();
+        });
+
+        document.getElementById('import-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    let count = 0;
+                    for (const key in imported) {
+                        const p = imported[key];
+                        if (p.name && p.gravity && p.airResistance && p.speedMultiplier) {
+                            PROJECTILE_PROFILES[key] = p;
+                            count++;
+                        }
+                    }
+                    saveCustomProjectiles();
+                    updateProjectileSelector();
+                    updateComparisonCheckboxes();
+                    alert(`Импортировано снарядов: ${count}`);
+                } catch (err) {
+                    alert('Ошибка импорта: неверный формат файла!');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        // ==================== BALLISTICS CORE ====================
         function timeInAir(y0, y, Vy, gravity, airResistance) {
             let t = 0;
             let tBelow = 999999999;
-
             if (y0 <= y) {
                 while (t < MAX_TICKS) {
                     y0 += Vy;
@@ -765,7 +968,6 @@
                     if (Vy < 0) return [-1, -1];
                 }
             }
-
             while (t < MAX_TICKS) {
                 y0 += Vy;
                 Vy = airResistance * Vy - gravity;
@@ -807,52 +1009,37 @@
 
             function tryAllAngles(low, high, elements, returnBoth = true) {
                 const deltaTimes = [];
-
                 for (const pitch of linspace(low, high, elements)) {
                     const pitchRad = pitch * Math.PI / 180;
                     const Vw = Math.cos(pitchRad) * initialSpeed;
                     const Vy = Math.sin(pitchRad) * initialSpeed;
                     const xCoord2d = length * Math.cos(pitchRad);
-
                     let timeToTarget;
                     try {
                         const arg = 1 - (distance - xCoord2d) / (100 * Vw);
                         if (arg <= 0) continue;
                         timeToTarget = Math.abs(Math.log(arg) / logAirResistance);
-                    } catch {
-                        continue;
-                    }
-
+                    } catch { continue; }
                     const yEndBarrel = cannon[1] + Math.sin(pitchRad) * length;
                     const [tBelow, tAbove] = timeInAir(yEndBarrel, target[1], Vy, gravity, airResistance);
                     if (tBelow < 0) continue;
-
                     const deltaT = Math.min(
                         Math.abs(timeToTarget - tBelow),
                         Math.abs(timeToTarget - tAbove)
                     );
                     deltaTimes.push([deltaT, pitch, deltaT + timeToTarget]);
                 }
-
                 if (deltaTimes.length === 0) {
                     throw new Error("Цель недостижима с текущей конфигурацией!");
                 }
-
                 if (returnBoth) {
                     deltaTimes.sort((a, b) => a[1] - b[1]);
                     let min1 = deltaTimes[0], min2 = deltaTimes[deltaTimes.length - 1];
-                    
                     for (let i = 1; i < deltaTimes.length; i++) {
-                        if (deltaTimes[i - 1][0] < deltaTimes[i][0]) {
-                            min1 = deltaTimes[i - 1];
-                            break;
-                        }
+                        if (deltaTimes[i - 1][0] < deltaTimes[i][0]) { min1 = deltaTimes[i - 1]; break; }
                     }
                     for (let i = deltaTimes.length - 2; i >= 0; i--) {
-                        if (deltaTimes[i][0] > deltaTimes[i + 1][0]) {
-                            min2 = deltaTimes[i + 1];
-                            break;
-                        }
+                        if (deltaTimes[i][0] > deltaTimes[i + 1][0]) { min2 = deltaTimes[i + 1]; break; }
                     }
                     return [min1, min2];
                 } else {
@@ -861,28 +1048,21 @@
             }
 
             let [traj1, traj2] = tryAllAngles(-30, 60, 91, true);
-
             for (let i = 0; i < iterations; i++) {
                 const range = Math.pow(10, -i);
-                traj1 = tryAllAnglesUnique(traj1[1] - range, traj1[1] + range, 21);
-                traj2 = tryAllAnglesUnique(traj2[1] - range, traj2[1] + range, 21);
-            }
-
-            function tryAllAnglesUnique(low, high, elements) {
-                return tryAllAngles(low, high, elements, false);
+                traj1 = tryAllAngles(traj1[1] - range, traj1[1] + range, 21, false);
+                traj2 = tryAllAngles(traj2[1] - range, traj2[1] + range, 21, false);
             }
 
             const processTrajectory = (traj) => {
                 let pitch = traj[1];
                 if (pitch > 60.5) pitch = "Over 60";
                 else if (pitch < -29.5) pitch = "Under -30";
-
                 const airtime = traj[2];
                 const airtimeSec = airtime / 20;
                 const deltaTime = traj[0];
                 const fuzeTime = Math.floor(airtime + deltaTime / 2 - 10);
                 const precision = Math.round((1 - deltaTime / airtime) * 10000) / 100;
-
                 return {
                     yaw: Math.round(yaw * 100) / 100,
                     pitch: pitch,
@@ -896,43 +1076,49 @@
             return {
                 trajectories: [processTrajectory(traj1), processTrajectory(traj2)],
                 profile: profile,
-                distance: distance
+                distance: distance,
+                rawTraj1: traj1,
+                rawTraj2: traj2,
+                initialSpeed: initialSpeed,
+                yaw: yaw
             };
         }
 
-        // ==================== ВИЗУАЛИЗАЦИЯ ====================
-        
-        function drawTrajectory(cannon, target, traj1, traj2, profile) {
+        // ==================== 2D VISUALIZATION WITH ANIMATION ====================
+        let animationState = {
+            playing: false,
+            currentTime: 0,
+            maxTime: 0,
+            traj1: null,
+            traj2: null,
+            profile: null,
+            cannon: null,
+            target: null,
+            animationId: null
+        };
+
+        function drawTrajectory2D(cannon, target, traj1, traj2, profile, currentTime = null) {
             const canvas = document.getElementById('trajectoryCanvas');
             const ctx = canvas.getContext('2d');
-            
-            // Устанавливаем размер canvas
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
-            
             const width = canvas.width;
             const height = canvas.height;
-            
-            // Очищаем canvas
             ctx.clearRect(0, 0, width, height);
-            
-            // Параметры для отрисовки
+
             const padding = 50;
             const graphWidth = width - 2 * padding;
             const graphHeight = height - 2 * padding;
-            
-            // Находим максимальные значения для масштабирования
             const maxDistance = Math.max(
                 Math.abs(cannon[0] - target[0]),
                 Math.abs(cannon[2] - target[2])
             ) * 1.2;
-            const maxHeight = 50; // Максимальная высота для визуализации
-            
-            // Функция масштабирования
+            const maxHeight = 80;
+
             const scaleX = (x) => padding + (x / maxDistance) * graphWidth;
             const scaleY = (y) => height - padding - (y / maxHeight) * graphHeight;
-            
-            // Рисуем сетку
+
+            // Сетка
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 10; i++) {
@@ -947,156 +1133,456 @@
                 ctx.lineTo(width - padding, y);
                 ctx.stroke();
             }
-            
-            // Рисуем ось X (дистанция)
+
+            // Оси
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(padding, height - padding);
             ctx.lineTo(width - padding, height - padding);
             ctx.stroke();
-            
-            // Рисуем ось Y (высота)
             ctx.beginPath();
             ctx.moveTo(padding, padding);
             ctx.lineTo(padding, height - padding);
             ctx.stroke();
-            
-            // Подписи осей
+
+            // Подписи
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.font = '12px Arial';
-            ctx.fillText('Дистанция (блоки)', width / 2, height - 10);
+            ctx.fillText('Дистанция (блоки)', width / 2 - 50, height - 10);
             ctx.save();
             ctx.translate(15, height / 2);
             ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Высота (блоки)', 0, 0);
+            ctx.fillText('Высота (блоки)', -30, 0);
             ctx.restore();
-            
-            // Функция для расчёта точки траектории
+
             function getTrajectoryPoint(pitch, t, initialSpeed, gravity, airResistance) {
                 const pitchRad = pitch * Math.PI / 180;
-                const Vx = Math.cos(pitchRad) * initialSpeed;
-                const Vy = Math.sin(pitchRad) * initialSpeed;
-                
-                let x = 0;
-                let y = 0;
-                let vx = Vx;
-                let vy = Vy;
-                
+                let x = 0, y = 0;
+                let vx = Math.cos(pitchRad) * initialSpeed;
+                let vy = Math.sin(pitchRad) * initialSpeed;
                 for (let i = 0; i < t; i++) {
                     x += vx;
                     y += vy;
                     vx *= airResistance;
                     vy = airResistance * vy - gravity;
                 }
-                
                 return { x, y };
             }
-            
-            // Рисуем траекторию 1 (низкая) - синяя
+
+            const pitch1 = typeof traj1.pitch === 'number' ? traj1.pitch : 30;
+            const pitch2 = typeof traj2.pitch === 'number' ? traj2.pitch : 45;
+
+            // Траектория 1
             ctx.strokeStyle = '#4a90e2';
             ctx.lineWidth = 3;
             ctx.beginPath();
-            const initialSpeed = 2 * profile.speedMultiplier; // Упрощённо
             let firstPoint = true;
-            for (let t = 0; t <= traj1.airtime; t += 2) {
-                const point = getTrajectoryPoint(
-                    typeof traj1.pitch === 'number' ? traj1.pitch : 30,
-                    t,
-                    initialSpeed,
-                    profile.gravity,
-                    profile.airResistance
-                );
+            const maxT1 = currentTime !== null ? Math.min(currentTime, traj1.airtime) : traj1.airtime;
+            for (let t = 0; t <= maxT1; t += 1) {
+                const point = getTrajectoryPoint(pitch1, t, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
                 const x = scaleX(point.x);
                 const y = scaleY(point.y);
-                if (firstPoint) {
-                    ctx.moveTo(x, y);
-                    firstPoint = false;
-                } else {
-                    ctx.lineTo(x, y);
-                }
+                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
+                else ctx.lineTo(x, y);
             }
             ctx.stroke();
-            
-            // Рисуем траекторию 2 (высокая) - оранжевая
+
+            // Траектория 2
             ctx.strokeStyle = '#f5a623';
             ctx.lineWidth = 3;
             ctx.beginPath();
             firstPoint = true;
-            for (let t = 0; t <= traj2.airtime; t += 2) {
-                const point = getTrajectoryPoint(
-                    typeof traj2.pitch === 'number' ? traj2.pitch : 45,
-                    t,
-                    initialSpeed,
-                    profile.gravity,
-                    profile.airResistance
-                );
+            const maxT2 = currentTime !== null ? Math.min(currentTime, traj2.airtime) : traj2.airtime;
+            for (let t = 0; t <= maxT2; t += 1) {
+                const point = getTrajectoryPoint(pitch2, t, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
                 const x = scaleX(point.x);
                 const y = scaleY(point.y);
-                if (firstPoint) {
-                    ctx.moveTo(x, y);
-                    firstPoint = false;
-                } else {
-                    ctx.lineTo(x, y);
-                }
+                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
+                else ctx.lineTo(x, y);
             }
             ctx.stroke();
-            
-            // Рисуем точку пушки
+
+            // Точка пушки
             ctx.fillStyle = '#50bc54';
             ctx.beginPath();
             ctx.arc(scaleX(0), scaleY(0), 8, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText('🔫', scaleX(0) - 10, scaleY(0) + 5);
-            
-            // Рисуем точку цели
+
+            // Точка цели
             ctx.fillStyle = '#980404';
             ctx.beginPath();
             ctx.arc(scaleX(maxDistance * 0.8), scaleY(0), 8, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = 'white';
-            ctx.fillText('🎯', scaleX(maxDistance * 0.8) - 10, scaleY(0) + 5);
-            
+
+            // Анимированная точка снаряда
+            if (currentTime !== null && currentTime > 0) {
+                const p1 = getTrajectoryPoint(pitch1, currentTime, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
+                const p2 = getTrajectoryPoint(pitch2, currentTime, profile.speedMultiplier * 2, profile.gravity, profile.airResistance);
+                
+                // Снаряд 1
+                ctx.fillStyle = '#4a90e2';
+                ctx.beginPath();
+                ctx.arc(scaleX(p1.x), scaleY(p1.y), 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Снаряд 2
+                ctx.fillStyle = '#f5a623';
+                ctx.beginPath();
+                ctx.arc(scaleX(p2.x), scaleY(p2.y), 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
             // Легенда
             ctx.fillStyle = '#4a90e2';
-            ctx.fillRect(width - 200, 20, 20, 3);
+            ctx.fillRect(width - 220, 20, 20, 3);
             ctx.fillStyle = 'white';
             ctx.font = '12px Arial';
-            ctx.fillText('Траектория 1 (низкая)', width - 175, 25);
-            
+            ctx.fillText('Траектория 1 (низкая)', width - 195, 25);
             ctx.fillStyle = '#f5a623';
-            ctx.fillRect(width - 200, 35, 20, 3);
+            ctx.fillRect(width - 220, 35, 20, 3);
             ctx.fillStyle = 'white';
-            ctx.fillText('Траектория 2 (высокая)', width - 175, 40);
+            ctx.fillText('Траектория 2 (высокая)', width - 195, 40);
         }
 
-        function drawGrapeshotCone(cannon, target, traj1, profile) {
-            const coneAngle = profile.coneAngle || 15;
-            const distance = Math.sqrt(
-                Math.pow(cannon[0] - target[0], 2) + 
-                Math.pow(cannon[2] - target[2], 2)
+        function animateTrajectory() {
+            if (!animationState.playing) return;
+            animationState.currentTime += 0.5;
+            if (animationState.currentTime >= animationState.maxTime) {
+                animationState.currentTime = animationState.maxTime;
+                animationState.playing = false;
+            }
+            drawTrajectory2D(
+                animationState.cannon,
+                animationState.target,
+                animationState.traj1,
+                animationState.traj2,
+                animationState.profile,
+                animationState.currentTime
             );
-            const coneRadius = distance * Math.tan(coneAngle * Math.PI / 180);
-            
-            document.getElementById('grapeshot-info').style.display = 'block';
-            document.getElementById('cone-angle').textContent = coneAngle;
-            document.getElementById('cone-radius').textContent = coneRadius.toFixed(1);
+            if (animationState.playing) {
+                animationState.animationId = requestAnimationFrame(animateTrajectory);
+            }
         }
 
-        // ==================== UI ЛОГИКА ====================
-        
-        const inputs = [
-            'cannon-x', 'cannon-y', 'cannon-z',
-            'target-x', 'target-y', 'target-z',
-            'power', 'length'
-        ];
+        document.getElementById('btn-play-animation').addEventListener('click', () => {
+            if (!animationState.traj1) return;
+            animationState.playing = true;
+            animateTrajectory();
+        });
 
+        document.getElementById('btn-pause-animation').addEventListener('click', () => {
+            animationState.playing = false;
+            if (animationState.animationId) {
+                cancelAnimationFrame(animationState.animationId);
+            }
+        });
+
+        document.getElementById('btn-reset-animation').addEventListener('click', () => {
+            animationState.playing = false;
+            animationState.currentTime = 0;
+            if (animationState.animationId) {
+                cancelAnimationFrame(animationState.animationId);
+            }
+            if (animationState.traj1) {
+                drawTrajectory2D(
+                    animationState.cannon,
+                    animationState.target,
+                    animationState.traj1,
+                    animationState.traj2,
+                    animationState.profile,
+                    0
+                );
+            }
+        });
+
+        // ==================== 3D VISUALIZATION (THREE.JS) ====================
+        let threeScene, threeCamera, threeRenderer, threeControls;
+        let threeObjects = [];
+
+        function initThreeJS() {
+            const container = document.getElementById('threeContainer');
+            container.innerHTML = '';
+            
+            threeScene = new THREE.Scene();
+            threeScene.background = new THREE.Color(0x1a1a2e);
+            
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+            threeCamera = new THREE.PerspectiveCamera(60, width / height, 0.1, 10000);
+            threeCamera.position.set(100, 80, 100);
+            
+            threeRenderer = new THREE.WebGLRenderer({ antialias: true });
+            threeRenderer.setSize(width, height);
+            container.appendChild(threeRenderer.domElement);
+            
+            threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+            threeControls.enableDamping = true;
+            threeControls.dampingFactor = 0.05;
+            
+            // Свет
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            threeScene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(100, 200, 100);
+            threeScene.add(directionalLight);
+            
+            // Сетка земли
+            const gridHelper = new THREE.GridHelper(500, 50, 0x444444, 0x222222);
+            threeScene.add(gridHelper);
+            
+            animateThree();
+        }
+
+        function animateThree() {
+            requestAnimationFrame(animateThree);
+            if (threeControls) threeControls.update();
+            if (threeRenderer && threeScene && threeCamera) {
+                threeRenderer.render(threeScene, threeCamera);
+            }
+        }
+
+        function drawTrajectory3D(cannon, target, traj1, traj2, profile) {
+            if (!threeScene) initThreeJS();
+            
+            // Очистка старых объектов
+            threeObjects.forEach(obj => threeScene.remove(obj));
+            threeObjects = [];
+            
+            const pitch1 = typeof traj1.pitch === 'number' ? traj1.pitch : 30;
+            const pitch2 = typeof traj2.pitch === 'number' ? traj2.pitch : 45;
+            const initialSpeed = profile.speedMultiplier * 2;
+            
+            function createTrajectoryLine(pitch, color, airtime) {
+                const points = [];
+                let x = 0, y = 0, z = 0;
+                const pitchRad = pitch * Math.PI / 180;
+                let vx = Math.cos(pitchRad) * initialSpeed;
+                let vy = Math.sin(pitchRad) * initialSpeed;
+                let vz = 0;
+                
+                for (let t = 0; t <= airtime; t++) {
+                    points.push(new THREE.Vector3(x, y, z));
+                    x += vx;
+                    y += vy;
+                    z += vz;
+                    vx *= profile.airResistance;
+                    vy = profile.airResistance * vy - profile.gravity;
+                    vz *= profile.airResistance;
+                }
+                
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({ color: color, linewidth: 3 });
+                const line = new THREE.Line(geometry, material);
+                return line;
+            }
+            
+            // Траектория 1 (синяя)
+            const line1 = createTrajectoryLine(pitch1, 0x4a90e2, traj1.airtime);
+            threeScene.add(line1);
+            threeObjects.push(line1);
+            
+            // Траектория 2 (оранжевая)
+            const line2 = createTrajectoryLine(pitch2, 0xf5a623, traj2.airtime);
+            threeScene.add(line2);
+            threeObjects.push(line2);
+            
+            // Точка пушки (зелёная сфера)
+            const cannonGeo = new THREE.SphereGeometry(3, 16, 16);
+            const cannonMat = new THREE.MeshPhongMaterial({ color: 0x50bc54 });
+            const cannonMesh = new THREE.Mesh(cannonGeo, cannonMat);
+            cannonMesh.position.set(0, 0, 0);
+            threeScene.add(cannonMesh);
+            threeObjects.push(cannonMesh);
+            
+            // Точка цели (красная сфера)
+            const targetGeo = new THREE.SphereGeometry(3, 16, 16);
+            const targetMat = new THREE.MeshPhongMaterial({ color: 0x980404 });
+            const targetMesh = new THREE.Mesh(targetGeo, targetMat);
+            const dx = target[0] - cannon[0];
+            const dz = target[2] - cannon[2];
+            targetMesh.position.set(dx, target[1] - cannon[1], dz);
+            threeScene.add(targetMesh);
+            threeObjects.push(targetMesh);
+            
+            // Центрирование камеры
+            const maxDist = Math.sqrt(dx * dx + dz * dz);
+            threeCamera.position.set(maxDist * 0.5, maxDist * 0.4, maxDist * 0.5);
+            threeControls.target.set(maxDist * 0.4, 20, dz * 0.5);
+            threeControls.update();
+        }
+
+        // ==================== COMPARISON VISUALIZATION ====================
+        function drawComparison(trajectories) {
+            const canvas = document.getElementById('compareCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+
+            const padding = 50;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            // Находим максимальную дистанцию среди всех траекторий
+            let maxDistance = 0;
+            trajectories.forEach(t => {
+                if (t.distance > maxDistance) maxDistance = t.distance;
+            });
+            maxDistance *= 1.2;
+            const maxHeight = 100;
+
+            const scaleX = (x) => padding + (x / maxDistance) * graphWidth;
+            const scaleY = (y) => height - padding - (y / maxHeight) * graphHeight;
+
+            // Сетка
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = padding + (graphWidth / 10) * i;
+                const y = padding + (graphHeight / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            // Оси
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.stroke();
+
+            // Подписи
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '12px Arial';
+            ctx.fillText('Дистанция (блоки)', width / 2 - 50, height - 10);
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Высота (блоки)', -30, 0);
+            ctx.restore();
+
+            function getTrajectoryPoint(pitch, t, initialSpeed, gravity, airResistance) {
+                const pitchRad = pitch * Math.PI / 180;
+                let x = 0, y = 0;
+                let vx = Math.cos(pitchRad) * initialSpeed;
+                let vy = Math.sin(pitchRad) * initialSpeed;
+                for (let i = 0; i < t; i++) {
+                    x += vx;
+                    y += vy;
+                    vx *= airResistance;
+                    vy = airResistance * vy - gravity;
+                }
+                return { x, y };
+            }
+
+            // Рисуем каждую траекторию
+            trajectories.forEach((t, index) => {
+                const color = TRAJECTORY_COLORS[index % TRAJECTORY_COLORS.length];
+                const pitch = typeof t.traj.pitch === 'number' ? t.traj.pitch : 30;
+                const initialSpeed = t.profile.speedMultiplier * 2;
+                
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                let firstPoint = true;
+                for (let time = 0; time <= t.traj.airtime; time += 1) {
+                    const point = getTrajectoryPoint(pitch, time, initialSpeed, t.profile.gravity, t.profile.airResistance);
+                    const x = scaleX(point.x);
+                    const y = scaleY(point.y);
+                    if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            });
+
+            // Легенда
+            let legendY = 20;
+            trajectories.forEach((t, index) => {
+                const color = TRAJECTORY_COLORS[index % TRAJECTORY_COLORS.length];
+                ctx.fillStyle = color;
+                ctx.fillRect(width - 250, legendY, 20, 3);
+                ctx.fillStyle = 'white';
+                ctx.font = '11px Arial';
+                const name = `${t.profile.icon} ${t.profile.name}`;
+                ctx.fillText(name.substring(0, 25), width - 225, legendY + 5);
+                legendY += 18;
+            });
+        }
+
+        document.getElementById('btn-compare').addEventListener('click', () => {
+            const checkboxes = document.querySelectorAll('#projectile-checkboxes input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                alert('Выберите хотя бы один снаряд для сравнения!');
+                return;
+            }
+            if (checkboxes.length > 4) {
+                alert('Можно сравнить максимум 4 снаряда одновременно!');
+                return;
+            }
+
+            // Получаем текущие параметры
+            const cannon = [
+                parseInt(document.getElementById('cannon-x').value) || 0,
+                parseInt(document.getElementById('cannon-y').value) || 64,
+                parseInt(document.getElementById('cannon-z').value) || 0
+            ];
+            const target = [
+                parseInt(document.getElementById('target-x').value) || 100,
+                parseInt(document.getElementById('target-y').value) || 64,
+                parseInt(document.getElementById('target-z').value) || 0
+            ];
+            const power = parseInt(document.getElementById('power').value) || 4;
+            const length = parseInt(document.getElementById('length').value) || 5;
+            const direction = document.getElementById('direction').value;
+
+            const trajectories = [];
+            checkboxes.forEach((cb, index) => {
+                try {
+                    const result = calculateTrajectories(cannon, target, power, direction, length, cb.value);
+                    trajectories.push({
+                        traj: result.trajectories[0], // Используем низкую траекторию для сравнения
+                        profile: result.profile,
+                        distance: result.distance
+                    });
+                } catch (e) {
+                    console.warn(`Не удалось рассчитать для ${cb.value}:`, e.message);
+                }
+            });
+
+            if (trajectories.length === 0) {
+                alert('Не удалось рассчитать ни одну траекторию!');
+                return;
+            }
+
+            document.getElementById('compare-canvas-container').style.display = 'block';
+            drawComparison(trajectories);
+        });
+
+        // ==================== UI LOGIC ====================
+        const inputs = ['cannon-x', 'cannon-y', 'cannon-z', 'target-x', 'target-y', 'target-z', 'power', 'length'];
         const btn = document.getElementById('calculate-btn');
         const status = document.getElementById('status');
 
-        // Загружаем настройки при старте
         loadCustomProjectiles();
         loadFromLocalStorage();
 
@@ -1137,31 +1623,49 @@
 
                 const result = calculateTrajectories(cannon, target, power, direction, length, projectileType);
                 displayResults(result);
-                drawTrajectory(cannon, target, result.trajectories[0], result.trajectories[1], result.profile);
                 
+                // 2D визуализация
+                animationState.traj1 = result.trajectories[0];
+                animationState.traj2 = result.trajectories[1];
+                animationState.profile = result.profile;
+                animationState.cannon = cannon;
+                animationState.target = target;
+                animationState.maxTime = Math.max(result.trajectories[0].airtime, result.trajectories[1].airtime);
+                animationState.currentTime = 0;
+                animationState.playing = false;
+                
+                drawTrajectory2D(cannon, target, result.trajectories[0], result.trajectories[1], result.profile, 0);
+                document.getElementById('visualization-section').style.display = 'block';
+
+                // 3D визуализация
+                drawTrajectory3D(cannon, target, result.trajectories[0], result.trajectories[1], result.profile);
+                document.getElementById('three-section').style.display = 'block';
+
+                // Grapeshot info
                 if (projectileType === 'grapeshot') {
-                    drawGrapeshotCone(cannon, target, result.trajectories[0], result.profile);
+                    const coneAngle = result.profile.coneAngle || 15;
+                    const coneRadius = result.distance * Math.tan(coneAngle * Math.PI / 180);
+                    document.getElementById('grapeshot-info').style.display = 'block';
+                    document.getElementById('cone-angle').textContent = coneAngle;
+                    document.getElementById('cone-radius').textContent = coneRadius.toFixed(1);
                 } else {
                     document.getElementById('grapeshot-info').style.display = 'none';
                 }
-                
-                document.getElementById('visualization-section').style.display = 'block';
 
                 status.textContent = `✅ Рассчитано для ${result.profile.icon} ${result.profile.name}`;
                 status.className = 'success';
             } catch (e) {
-                status.textContent = " " + e.message;
+                status.textContent = "❌ " + e.message;
                 status.className = 'error';
                 document.getElementById('visualization-section').style.display = 'none';
+                document.getElementById('three-section').style.display = 'none';
             }
         });
 
         function displayResults(result) {
             const [t1, t2] = result.trajectories;
             const profile = result.profile;
-            
             document.getElementById('results').style.display = 'grid';
-            
             document.getElementById('proj-badge-1').textContent = `${profile.icon} ${profile.name}`;
             document.getElementById('proj-badge-2').textContent = `${profile.icon} ${profile.name}`;
             
@@ -1174,80 +1678,48 @@
                 document.getElementById(`fuze-${prefix}`).textContent = `${t.fuzeTime} тиков`;
                 document.getElementById(`precision-${prefix}`).textContent = `${t.precision}%`;
             };
-
             updateCard('1', t1);
             updateCard('2', t2);
         }
 
-        // ==================== МОДАЛЬНОЕ ОКНО ====================
-        
+        // ==================== MODAL ====================
         const modal = document.getElementById('custom-projectile-modal');
-        const btnAddProjectile = document.getElementById('btn-add-projectile');
-        const btnCancelCustom = document.getElementById('btn-cancel-custom');
-        const btnSaveCustom = document.getElementById('btn-save-custom');
+        document.getElementById('btn-add-projectile').addEventListener('click', () => modal.classList.add('active'));
+        document.getElementById('btn-cancel-custom').addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 
-        btnAddProjectile.addEventListener('click', () => {
-            modal.classList.add('active');
-        });
-
-        btnCancelCustom.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-
-        btnSaveCustom.addEventListener('click', () => {
+        document.getElementById('btn-save-custom').addEventListener('click', () => {
             const name = document.getElementById('custom-name').value.trim();
-            const icon = document.getElementById('custom-icon').value.trim() || '';
+            const icon = document.getElementById('custom-icon').value.trim() || '🔹';
             const gravity = parseFloat(document.getElementById('custom-gravity').value);
             const airResistance = parseFloat(document.getElementById('custom-air-resistance').value);
             const speedMultiplier = parseFloat(document.getElementById('custom-speed').value);
 
-            if (!name) {
-                alert('Пожалуйста, введите название снаряда');
-                return;
-            }
-
-            if (gravity < 0.04 || gravity > 0.08) {
-                alert('Гравитация должна быть между 0.04 и 0.08');
-                return;
-            }
-
-            if (airResistance < 0.95 || airResistance > 1.0) {
-                alert('Сопротивление воздуха должно быть между 0.95 и 1.0');
-                return;
-            }
-
-            if (speedMultiplier < 1.5 || speedMultiplier > 3.0) {
-                alert('Множитель скорости должен быть между 1.5 и 3.0');
-                return;
-            }
+            if (!name) { alert('Введите название снаряда'); return; }
+            if (gravity < 0.04 || gravity > 0.08) { alert('Гравитация: 0.04 - 0.08'); return; }
+            if (airResistance < 0.95 || airResistance > 1.0) { alert('Сопротивление: 0.95 - 1.0'); return; }
+            if (speedMultiplier < 1.5 || speedMultiplier > 3.0) { alert('Скорость: 1.5 - 3.0'); return; }
 
             const key = 'custom_' + Date.now();
-            PROJECTILE_PROFILES[key] = {
-                name: name,
-                icon: icon,
-                gravity: gravity,
-                airResistance: airResistance,
-                speedMultiplier: speedMultiplier
-            };
-
+            PROJECTILE_PROFILES[key] = { name, icon, gravity, airResistance, speedMultiplier };
             saveCustomProjectiles();
             updateProjectileSelector();
+            updateComparisonCheckboxes();
             document.getElementById('projectile-type').value = key;
-            
             modal.classList.remove('active');
-            
-            // Очищаем форму
             document.getElementById('custom-name').value = '';
             document.getElementById('custom-icon').value = '';
-            document.getElementById('custom-gravity').value = '0.05';
-            document.getElementById('custom-air-resistance').value = '0.99';
-            document.getElementById('custom-speed').value = '2.0';
         });
 
-        // Закрытие модального окна при клике вне его
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
+        // Обработка изменения размера окна для Three.js
+        window.addEventListener('resize', () => {
+            if (threeRenderer && threeCamera) {
+                const container = document.getElementById('threeContainer');
+                const width = container.offsetWidth;
+                const height = container.offsetHeight;
+                threeRenderer.setSize(width, height);
+                threeCamera.aspect = width / height;
+                threeCamera.updateProjectionMatrix();
             }
         });
     </script>
