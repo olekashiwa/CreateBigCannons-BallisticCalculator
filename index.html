@@ -5,263 +5,1251 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мираж-Гео | Ballistic Calculator</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --accent: #1E538D;
+            --accent-hover: #2a6ab5;
+            --text-primary: #eaeaea;
+            --text-secondary: #a0a0a0;
+            --success: #50bc54;
+            --error: #980404;
+            --warning: #c06661;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #f0f0f0;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        .subtitle { text-align: center; opacity: 0.8; margin-bottom: 30px; }
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        .card h2 { margin-bottom: 16px; font-size: 1.5rem; border-bottom: 2px solid #4a90e2; padding-bottom: 8px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        label { display: block; margin-bottom: 4px; font-size: 0.9rem; opacity: 0.9; }
+
+        h1 {
+            text-align: center;
+            background: var(--accent);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .input-section h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-hover);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .coord-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
         input, select {
             width: 100%;
-            padding: 10px;
+            padding: 0.7rem;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(0,0,0,0.3);
-            color: #fff;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-primary);
             font-size: 1rem;
-            transition: all 0.2s;
+            transition: border-color 0.2s;
         }
-        input:focus, select:focus { outline: none; border-color: #4a90e2; box-shadow: 0 0 0 2px rgba(74,144,226,0.3); }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .options-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .options-row .option-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .projectile-selector {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .projectile-selector select {
+            flex: 1;
+        }
+
+        .btn-add-projectile {
+            padding: 0.7rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-add-projectile:hover {
+            background: var(--accent-hover);
+        }
+
         button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-            color: #fff;
+            padding: 1rem;
+            background: var(--accent);
+            color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.1s;
+            transition: background 0.2s, transform 0.1s;
         }
-        button:hover:not(:disabled) { transform: translateY(-2px); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .status { padding: 12px; border-radius: 8px; margin-top: 15px; display: none; font-weight: bold; }
-        .status.error { background: rgba(231, 76, 60, 0.3); border: 1px solid #e74c3c; display: block; }
-        .status.success { background: rgba(46, 204, 113, 0.3); border: 1px solid #2ecc71; display: block; }
-        .trajectory { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 10px; margin-bottom: 10px; }
-        .trajectory h3 { margin-bottom: 12px; color: #4a90e2; }
-        .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .result-row:last-child { border-bottom: none; }
-        .result-label { opacity: 0.8; }
-        .result-value { font-weight: bold; color: #4a90e2; }
-        .footer { text-align: center; margin-top: 30px; opacity: 0.6; font-size: 0.9rem; }
-        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+        button:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .trajectory-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .trajectory-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .trajectory-card h3 {
+            margin-bottom: 1rem;
+            color: var(--accent-hover);
+            font-size: 1.2rem;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+        }
+
+        .result-value {
+            font-weight: bold;
+            font-family: 'Consolas', monospace;
+        }
+
+        .warning {
+            color: var(--warning);
+        }
+
+        .projectile-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        #status {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            min-height: 1.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .success { color: var(--success); background: rgba(80, 188, 84, 0.1); }
+        .error { color: var(--error); background: rgba(152, 4, 4, 0.1); }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 100;
+            margin-bottom: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Canvas visualization */
+        .visualization-section {
+            margin-top: 2rem;
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .visualization-section h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-hover);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        #trajectoryCanvas {
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* Grapeshot cone visualization */
+        .grapeshot-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(192, 102, 97, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            color: var(--warning);
+        }
+
+        .grapeshot-info h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: var(--accent-hover);
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .btn-cancel {
+            background: var(--text-secondary);
+        }
+
+        .btn-cancel:hover {
+            background: #808080;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-hover);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            .input-grid, .results {
+                grid-template-columns: 1fr;
+            }
+            .options-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .options-row {
+                grid-template-columns: 1fr;
+            }
+            .coord-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🎯 Мираж-Гео</h1>
-    <p class="subtitle">Create Big Cannons — Ballistic Calculator</p>
+    <div class="container">
+        <h1> Мираж-Гео</h1>
+        <p class="subtitle">Create Big Cannons — Ballistic Calculator</p>
 
-    <div class="grid-2">
-        <div class="card">
-            <h2>Позиция пушки</h2>
-            <div class="grid-3">
-                <div><label>X</label><input type="number" id="cx" value="0"></div>
-                <div><label>Y</label><input type="number" id="cy" value="64"></div>
-                <div><label>Z</label><input type="number" id="cz" value="0"></div>
+        <div class="input-grid">
+            <div class="input-section">
+                <h2>📍 Позиция пушки</h2>
+                <div class="coord-inputs">
+                    <div>
+                        <label>X</label>
+                        <input type="number" id="cannon-x" placeholder="X">
+                    </div>
+                    <div>
+                        <label>Y</label>
+                        <input type="number" id="cannon-y" placeholder="Y">
+                    </div>
+                    <div>
+                        <label>Z</label>
+                        <input type="number" id="cannon-z" placeholder="Z">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <h2>🎯 Позиция цели</h2>
+                <div class="coord-inputs">
+                    <div>
+                        <label>X</label>
+                        <input type="number" id="target-x" placeholder="X">
+                    </div>
+                    <div>
+                        <label>Y</label>
+                        <input type="number" id="target-y" placeholder="Y">
+                    </div>
+                    <div>
+                        <label>Z</label>
+                        <input type="number" id="target-z" placeholder="Z">
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="card">
-            <h2>Позиция цели</h2>
-            <div class="grid-3">
-                <div><label>X</label><input type="number" id="tx" value="100"></div>
-                <div><label>Y</label><input type="number" id="ty" value="64"></div>
-                <div><label>Z</label><input type="number" id="tz" value="0"></div>
+
+        <div class="input-section" style="margin-bottom: 2rem;">
+            <h2>⚙️ Конфигурация пушки</h2>
+            <div class="options-row">
+                <div class="option-group">
+                    <label>Длина ствола (blocks)</label>
+                    <input type="number" id="length" min="1" placeholder="e.g. 10">
+                </div>
+                <div class="option-group">
+                    <label>Кол-во пороховых зарядов</label>
+                    <input type="number" id="power" min="1" placeholder="e.g. 5">
+                </div>
+                <div class="option-group">
+                    <label>Направление</label>
+                    <select id="direction">
+                        <option value="north">North (Север)</option>
+                        <option value="south">South (Юг)</option>
+                        <option value="east">East (Восток)</option>
+                        <option value="west">West (Запад)</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label class="tooltip" data-tooltip="Выберите тип снаряда для точного расчёта">
+                        Тип снаряда (Projectile)
+                    </label>
+                    <div class="projectile-selector">
+                        <select id="projectile-type">
+                            <option value="he"> HE Shell (фугасный)</option>
+                            <option value="ap">🛡️ AP / Solid Shot (бронебойный)</option>
+                            <option value="shrapnel">🔩 Shrapnel (шрапнель)</option>
+                            <option value="grapeshot">🎯 Grapeshot (картечь)</option>
+                            <option value="smoke">💨 Smoke (дымовой)</option>
+                            <option value="airburst">⏱️ Airburst (с подрывом)</option>
+                            <option value="advanced_he">🧪 Advanced HE (CBC:AT)</option>
+                            <option value="custom_ap"> Custom AP (CBC:AT)</option>
+                        </select>
+                        <button class="btn-add-projectile" id="btn-add-projectile" title="Добавить свой снаряд">➕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="calculate-btn" disabled>Рассчитать</button>
+
+        <div id="status"></div>
+
+        <div class="results" id="results" style="display: none;">
+            <div class="trajectory-card">
+                <h3> Траектория 1 (Низкая / Прямая) <span class="projectile-badge" id="proj-badge-1">—</span></h3>
+                <div class="result-row">
+                    <span class="result-label">Yaw (горизонт.):</span>
+                    <span class="result-value" id="yaw-1">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Pitch (вертик.):</span>
+                    <span class="result-value" id="pitch-1">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Время полёта:</span>
+                    <span class="result-value" id="airtime-1">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Взрыватель (тики):</span>
+                    <span class="result-value" id="fuze-1">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Точность:</span>
+                    <span class="result-value" id="precision-1">—</span>
+                </div>
+            </div>
+
+            <div class="trajectory-card">
+                <h3> Траектория 2 (Высокая / Навесная) <span class="projectile-badge" id="proj-badge-2">—</span></h3>
+                <div class="result-row">
+                    <span class="result-label">Yaw (горизонт.):</span>
+                    <span class="result-value" id="yaw-2">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Pitch (вертик.):</span>
+                    <span class="result-value" id="pitch-2">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Время полёта:</span>
+                    <span class="result-value" id="airtime-2">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Взрыватель (тики):</span>
+                    <span class="result-value" id="fuze-2">—</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Точность:</span>
+                    <span class="result-value" id="precision-2">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Section -->
+        <div class="visualization-section" id="visualization-section" style="display: none;">
+            <h2>📊 Визуализация траектории</h2>
+            <canvas id="trajectoryCanvas"></canvas>
+            <div id="grapeshot-info" class="grapeshot-info" style="display: none;">
+                <h3>🎯 Конус поражения картечи</h3>
+                <p>Угол разлёта: <strong id="cone-angle">—</strong>°</p>
+                <p>Радиус поражения на дистанции: <strong id="cone-radius">—</strong> блоков</p>
+            </div>
+        </div>
+
+        <footer>
+            Мираж-Гео © 2026 — Основано на оригинальном калькуляторе 
+            <a href="https://github.com/Malex21/CreateBigCannons-BallisticCalculator" target="_blank">Malex21</a>
+        </footer>
+    </div>
+
+    <!-- Modal for custom projectile -->
+    <div id="custom-projectile-modal" class="modal">
+        <div class="modal-content">
+            <h2> Добавить свой снаряд</h2>
+            <div class="form-group">
+                <label>Название снаряда</label>
+                <input type="text" id="custom-name" placeholder="e.g. My Custom Shell">
+            </div>
+            <div class="form-group">
+                <label>Иконка (эмодзи)</label>
+                <input type="text" id="custom-icon" placeholder="e.g. 🔥" maxlength="2">
+            </div>
+            <div class="form-group">
+                <label>Гравитация (0.04 - 0.08)</label>
+                <input type="number" id="custom-gravity" step="0.001" min="0.04" max="0.08" value="0.05">
+            </div>
+            <div class="form-group">
+                <label>Сопротивление воздуха (0.95 - 1.0)</label>
+                <input type="number" id="custom-air-resistance" step="0.001" min="0.95" max="1.0" value="0.99">
+            </div>
+            <div class="form-group">
+                <label>Множитель скорости (1.5 - 3.0)</label>
+                <input type="number" id="custom-speed" step="0.1" min="1.5" max="3.0" value="2.0">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" id="btn-cancel-custom">Отмена</button>
+                <button id="btn-save-custom">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>Конфигурация пушки</h2>
-        <div class="grid-3">
-            <div><label>Длина ствола (blocks)</label><input type="number" id="length" value="5" min="1"></div>
-            <div><label>Кол-во пороховых зарядов</label><input type="number" id="power" value="4" min="1"></div>
-            <div>
-                <label>Направление</label>
-                <select id="direction">
-                    <option value="east">East (Восток)</option>
-                    <option value="west">West (Запад)</option>
-                    <option value="north">North (Север)</option>
-                    <option value="south">South (Юг)</option>
-                </select>
-            </div>
-        </div>
-        <button onclick="calculate()" id="calcBtn">Рассчитать</button>
-        <div id="status" class="status"></div>
-    </div>
+    <script>
+        // ==================== ФИЗИЧЕСКИЕ КОНСТАНТЫ ====================
+        const BASE_GRAVITY = 0.05;
+        const BASE_AIR_RESISTANCE = 0.99;
+        const BASE_SPEED_MULTIPLIER = 2;
+        const MAX_TICKS = 100000;
 
-    <div id="results" style="display:none;">
-        <div class="card">
-            <h2>Результаты</h2>
-            <div class="trajectory">
-                <h3>📐 Траектория 1 (прямая)</h3>
-                <div class="result-row"><span class="result-label">Yaw (горизонталь)</span><span class="result-value" id="yaw1">-</span></div>
-                <div class="result-row"><span class="result-label">Pitch (вертикаль)</span><span class="result-value" id="pitch1">-</span></div>
-                <div class="result-row"><span class="result-label">Время полёта (сек)</span><span class="result-value" id="air1">-</span></div>
-                <div class="result-row"><span class="result-label">Запал (fuze, тики)</span><span class="result-value" id="fuze1">-</span></div>
-                <div class="result-row"><span class="result-label">Точность</span><span class="result-value" id="prec1">-</span></div>
-            </div>
-            <div class="trajectory">
-                <h3>🌉 Траектория 2 (навесная)</h3>
-                <div class="result-row"><span class="result-label">Yaw (горизонталь)</span><span class="result-value" id="yaw2">-</span></div>
-                <div class="result-row"><span class="result-label">Pitch (вертикаль)</span><span class="result-value" id="pitch2">-</span></div>
-                <div class="result-row"><span class="result-label">Время полёта (сек)</span><span class="result-value" id="air2">-</span></div>
-                <div class="result-row"><span class="result-label">Запал (fuze, тики)</span><span class="result-value" id="fuze2">-</span></div>
-                <div class="result-row"><span class="result-label">Точность</span><span class="result-value" id="prec2">-</span></div>
-            </div>
-        </div>
-    </div>
+        // Профили снарядов
+        const PROJECTILE_PROFILES = {
+            he: {
+                name: "HE Shell",
+                icon: "💥",
+                gravity: 0.05,
+                airResistance: 0.99,
+                speedMultiplier: 2.0
+            },
+            ap: {
+                name: "AP / Solid Shot",
+                icon: "🛡️",
+                gravity: 0.05,
+                airResistance: 0.995,
+                speedMultiplier: 2.2
+            },
+            shrapnel: {
+                name: "Shrapnel",
+                icon: "🔩",
+                gravity: 0.05,
+                airResistance: 0.985,
+                speedMultiplier: 1.9
+            },
+            grapeshot: {
+                name: "Grapeshot",
+                icon: "🎯",
+                gravity: 0.06,
+                airResistance: 0.97,
+                speedMultiplier: 1.7,
+                coneAngle: 15 // Угол разлёта картечи в градусах
+            },
+            smoke: {
+                name: "Smoke",
+                icon: "💨",
+                gravity: 0.045,
+                airResistance: 0.992,
+                speedMultiplier: 1.8
+            },
+            airburst: {
+                name: "Airburst",
+                icon: "⏱️",
+                gravity: 0.05,
+                airResistance: 0.99,
+                speedMultiplier: 2.0
+            },
+            advanced_he: {
+                name: "Advanced HE (CBC:AT)",
+                icon: "🧪",
+                gravity: 0.048,
+                airResistance: 0.991,
+                speedMultiplier: 2.1
+            },
+            custom_ap: {
+                name: "Custom AP (CBC:AT)",
+                icon: "⚡",
+                gravity: 0.05,
+                airResistance: 0.997,
+                speedMultiplier: 2.4
+            }
+        };
 
-    <p class="footer">Мираж-Гео © 2026 — Основано на оригинальном калькуляторе Malex21</p>
-</div>
-
-<script>
-// ===== Баллистическое ядро (порт с Python) =====
-class OutOfRangeException extends Error {
-    constructor(msg) { super(msg); this.name = "OutOfRangeException"; }
-}
-
-function timeInAir(y0, y, Vy) {
-    let t = 0, t_below = 999999999;
-    if (y0 <= y) {
-        while (t < 100000) {
-            y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
-            if (y0 > y) { t_below = t - 1; break; }
+        // Загрузка пользовательских снарядов из localStorage
+        function loadCustomProjectiles() {
+            const saved = localStorage.getItem('customProjectiles');
+            if (saved) {
+                const custom = JSON.parse(saved);
+                Object.assign(PROJECTILE_PROFILES, custom);
+                updateProjectileSelector();
+            }
         }
-        if (Vy < 0) return [-1, -1];
-        while (t < 100000) {
-            y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
-            if (y0 <= y) return [t_below, t];
+
+        function saveCustomProjectiles() {
+            const custom = {};
+            for (const key in PROJECTILE_PROFILES) {
+                if (!['he', 'ap', 'shrapnel', 'grapeshot', 'smoke', 'airburst', 'advanced_he', 'custom_ap'].includes(key)) {
+                    custom[key] = PROJECTILE_PROFILES[key];
+                }
+            }
+            localStorage.setItem('customProjectiles', JSON.stringify(custom));
         }
-        return [-1, -1];
-    }
-    while (t < 100000) {
-        y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
-        if (y0 <= y) { t_below = t - 1; break; }
-    }
-    if (Vy > 0) return [-1, -1];
-    while (t < 100000) {
-        y0 += Vy; Vy = 0.99 * Vy - 0.05; t++;
-        if (y0 > y) return [t_below, t];
-    }
-    return [-1, -1];
-}
 
-function linspace(start, end, num) {
-    const step = (end - start) / (num - 1);
-    const res = [];
-    for (let i = 0; i < num; i++) res.push(start + step * i);
-    return res;
-}
-
-function tryAngles(low, high, num, dist, speed, len, cy, ty, unique=false) {
-    const deltas = [];
-    for (const pitch of linspace(low, high, num)) {
-        const rad = pitch * Math.PI / 180;
-        const Vw = Math.cos(rad) * speed;
-        const Vy = Math.sin(rad) * speed;
-        const x2d = len * Math.cos(rad);
-        let timeToTarget;
-        try {
-            timeToTarget = Math.abs(Math.log(1 - (dist - x2d) / (100 * Vw)) / -0.010050335853501);
-        } catch { continue; }
-        const yBarrel = cy + Math.sin(rad) * len;
-        const [tb, ta] = timeInAir(yBarrel, ty, Vy);
-        if (tb < 0) continue;
-        const deltaT = Math.min(Math.abs(timeToTarget - tb), Math.abs(timeToTarget - ta));
-        deltas.push([deltaT, pitch, deltaT + timeToTarget]);
-    }
-    if (deltas.length === 0) throw new OutOfRangeException("Цель недостижима с текущей конфигурацией!");
-    deltas.sort((a, b) => a[0] - b[0]);
-    if (unique) return deltas[0];
-    return [deltas[0], deltas[deltas.length - 1]];
-}
-
-function ballisticsToTarget(cannon, target, power, direction, length) {
-    const Dx = cannon[0] - target[0];
-    const Dz = cannon[2] - target[2];
-    const dist = Math.sqrt(Dx*Dx + Dz*Dz);
-    const speed = power * 2;
-    
-    let yaw = Dx !== 0 ? Math.atan(Dz/Dx) * 57.2957795131 : 90;
-    if (Dx >= 0) yaw += 180;
-    
-    let [r1, r2] = tryAngles(-30, 60, 91, dist, speed, length, cannon[1], target[1]);
-    let [dt1, p1, at1] = r1;
-    let [dt2, p2, at2] = r2;
-    
-    for (let i = 0; i < 5; i++) {
-        [dt1, p1, at1] = tryAngles(p1 - 10**(-i), p1 + 10**(-i), 21, dist, speed, length, cannon[1], target[1], true);
-        [dt2, p2, at2] = tryAngles(p2 - 10**(-i), p2 + 10**(-i), 21, dist, speed, length, cannon[1], target[1], true);
-    }
-    
-    p1 = p1 > 60.5 ? "Over 60" : p1 < -29.5 ? "Under -30" : p1;
-    p2 = p2 > 60.5 ? "Over 60" : p2 < -29.5 ? "Under -30" : p2;
-    
-    if (direction === "north") yaw = (yaw + 90) % 360;
-    else if (direction === "west") yaw = (yaw + 180) % 360;
-    else if (direction === "south") yaw = (yaw + 270) % 360;
-    
-    return [
-        [yaw, p1, at1, at1/20, Math.floor(at1 + dt1/2 - 10), Math.round((1 - dt1/at1) * 100)],
-        [yaw, p2, at2, at2/20, Math.floor(at2 + dt2/2 - 10), Math.round((1 - dt2/at2) * 100)]
-    ];
-}
-
-// ===== UI =====
-function showStatus(msg, isError) {
-    const s = document.getElementById('status');
-    s.textContent = msg;
-    s.className = 'status ' + (isError ? 'error' : 'success');
-}
-
-function calculate() {
-    try {
-        const cannon = [+document.getElementById('cx').value, +document.getElementById('cy').value, +document.getElementById('cz').value];
-        const target = [+document.getElementById('tx').value, +document.getElementById('ty').value, +document.getElementById('tz').value];
-        const length = +document.getElementById('length').value;
-        const power = +document.getElementById('power').value;
-        const direction = document.getElementById('direction').value;
-        
-        if (cannon.some(isNaN) || target.some(isNaN) || isNaN(length) || isNaN(power)) {
-            showStatus("Ошибка: все поля должны содержать числа", true);
-            return;
+        function updateProjectileSelector() {
+            const select = document.getElementById('projectile-type');
+            select.innerHTML = '';
+            for (const key in PROJECTILE_PROFILES) {
+                const profile = PROJECTILE_PROFILES[key];
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${profile.icon} ${profile.name}`;
+                select.appendChild(option);
+            }
         }
+
+        // ==================== LOCALSTORAGE ====================
+        function saveToLocalStorage() {
+            const data = {
+                cannonX: document.getElementById('cannon-x').value,
+                cannonY: document.getElementById('cannon-y').value,
+                cannonZ: document.getElementById('cannon-z').value,
+                targetX: document.getElementById('target-x').value,
+                targetY: document.getElementById('target-y').value,
+                targetZ: document.getElementById('target-z').value,
+                length: document.getElementById('length').value,
+                power: document.getElementById('power').value,
+                direction: document.getElementById('direction').value,
+                projectileType: document.getElementById('projectile-type').value
+            };
+            localStorage.setItem('ballisticCalculatorSettings', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('ballisticCalculatorSettings');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.cannonX) document.getElementById('cannon-x').value = data.cannonX;
+                if (data.cannonY) document.getElementById('cannon-y').value = data.cannonY;
+                if (data.cannonZ) document.getElementById('cannon-z').value = data.cannonZ;
+                if (data.targetX) document.getElementById('target-x').value = data.targetX;
+                if (data.targetY) document.getElementById('target-y').value = data.targetY;
+                if (data.targetZ) document.getElementById('target-z').value = data.targetZ;
+                if (data.length) document.getElementById('length').value = data.length;
+                if (data.power) document.getElementById('power').value = data.power;
+                if (data.direction) document.getElementById('direction').value = data.direction;
+                if (data.projectileType) document.getElementById('projectile-type').value = data.projectileType;
+            }
+        }
+
+        // ==================== ЯДРО РАСЧЁТА ====================
         
-        const [r1, r2] = ballisticsToTarget(cannon, target, power, direction, length);
+        function timeInAir(y0, y, Vy, gravity, airResistance) {
+            let t = 0;
+            let tBelow = 999999999;
+
+            if (y0 <= y) {
+                while (t < MAX_TICKS) {
+                    y0 += Vy;
+                    Vy = airResistance * Vy - gravity;
+                    t++;
+                    if (y0 > y) {
+                        tBelow = t - 1;
+                        break;
+                    }
+                    if (Vy < 0) return [-1, -1];
+                }
+            }
+
+            while (t < MAX_TICKS) {
+                y0 += Vy;
+                Vy = airResistance * Vy - gravity;
+                t++;
+                if (y0 <= y) return [tBelow, t];
+            }
+            return [-1, -1];
+        }
+
+        function linspace(start, end, num) {
+            const result = [];
+            const delta = (end - start) / num;
+            for (let i = 0; i <= num; i++) {
+                result.push(start + i * delta);
+            }
+            return result;
+        }
+
+        function calculateTrajectories(cannon, target, power, direction, length, projectileType) {
+            const profile = PROJECTILE_PROFILES[projectileType] || PROJECTILE_PROFILES.he;
+            const gravity = profile.gravity;
+            const airResistance = profile.airResistance;
+            const speedMultiplier = profile.speedMultiplier;
+            const logAirResistance = Math.log(airResistance);
+
+            const dx = cannon[0] - target[0];
+            const dz = cannon[2] - target[2];
+            const distance = Math.sqrt(dx * dx + dz * dz);
+            const initialSpeed = power * speedMultiplier;
+            const iterations = 5;
+
+            let yaw = (dx !== 0) ? Math.atan2(dz, dx) * (180 / Math.PI) : 90;
+            if (dx >= 0) yaw += 180;
+
+            if (direction === 'north') yaw = (yaw + 90) % 360;
+            else if (direction === 'west') yaw = (yaw + 180) % 360;
+            else if (direction === 'south') yaw = (yaw + 270) % 360;
+            else if (direction !== 'east') throw new Error("Invalid direction");
+
+            function tryAllAngles(low, high, elements, returnBoth = true) {
+                const deltaTimes = [];
+
+                for (const pitch of linspace(low, high, elements)) {
+                    const pitchRad = pitch * Math.PI / 180;
+                    const Vw = Math.cos(pitchRad) * initialSpeed;
+                    const Vy = Math.sin(pitchRad) * initialSpeed;
+                    const xCoord2d = length * Math.cos(pitchRad);
+
+                    let timeToTarget;
+                    try {
+                        const arg = 1 - (distance - xCoord2d) / (100 * Vw);
+                        if (arg <= 0) continue;
+                        timeToTarget = Math.abs(Math.log(arg) / logAirResistance);
+                    } catch {
+                        continue;
+                    }
+
+                    const yEndBarrel = cannon[1] + Math.sin(pitchRad) * length;
+                    const [tBelow, tAbove] = timeInAir(yEndBarrel, target[1], Vy, gravity, airResistance);
+                    if (tBelow < 0) continue;
+
+                    const deltaT = Math.min(
+                        Math.abs(timeToTarget - tBelow),
+                        Math.abs(timeToTarget - tAbove)
+                    );
+                    deltaTimes.push([deltaT, pitch, deltaT + timeToTarget]);
+                }
+
+                if (deltaTimes.length === 0) {
+                    throw new Error("Цель недостижима с текущей конфигурацией!");
+                }
+
+                if (returnBoth) {
+                    deltaTimes.sort((a, b) => a[1] - b[1]);
+                    let min1 = deltaTimes[0], min2 = deltaTimes[deltaTimes.length - 1];
+                    
+                    for (let i = 1; i < deltaTimes.length; i++) {
+                        if (deltaTimes[i - 1][0] < deltaTimes[i][0]) {
+                            min1 = deltaTimes[i - 1];
+                            break;
+                        }
+                    }
+                    for (let i = deltaTimes.length - 2; i >= 0; i--) {
+                        if (deltaTimes[i][0] > deltaTimes[i + 1][0]) {
+                            min2 = deltaTimes[i + 1];
+                            break;
+                        }
+                    }
+                    return [min1, min2];
+                } else {
+                    return deltaTimes.reduce((min, curr) => curr[0] < min[0] ? curr : min);
+                }
+            }
+
+            let [traj1, traj2] = tryAllAngles(-30, 60, 91, true);
+
+            for (let i = 0; i < iterations; i++) {
+                const range = Math.pow(10, -i);
+                traj1 = tryAllAnglesUnique(traj1[1] - range, traj1[1] + range, 21);
+                traj2 = tryAllAnglesUnique(traj2[1] - range, traj2[1] + range, 21);
+            }
+
+            function tryAllAnglesUnique(low, high, elements) {
+                return tryAllAngles(low, high, elements, false);
+            }
+
+            const processTrajectory = (traj) => {
+                let pitch = traj[1];
+                if (pitch > 60.5) pitch = "Over 60";
+                else if (pitch < -29.5) pitch = "Under -30";
+
+                const airtime = traj[2];
+                const airtimeSec = airtime / 20;
+                const deltaTime = traj[0];
+                const fuzeTime = Math.floor(airtime + deltaTime / 2 - 10);
+                const precision = Math.round((1 - deltaTime / airtime) * 10000) / 100;
+
+                return {
+                    yaw: Math.round(yaw * 100) / 100,
+                    pitch: pitch,
+                    airtime: airtime,
+                    airtimeSec: airtimeSec,
+                    fuzeTime: fuzeTime,
+                    precision: precision
+                };
+            };
+
+            return {
+                trajectories: [processTrajectory(traj1), processTrajectory(traj2)],
+                profile: profile,
+                distance: distance
+            };
+        }
+
+        // ==================== ВИЗУАЛИЗАЦИЯ ====================
         
-        ['yaw','pitch','air','fuze','prec'].forEach((f,i) => {
-            document.getElementById(f+'1').textContent = i === 3 ? r1[4] + ' ticks' : (i === 4 ? r1[5] + '%' : r1[i]);
-            document.getElementById(f+'2').textContent = i === 3 ? r2[4] + ' ticks' : (i === 4 ? r2[5] + '%' : r2[i]);
+        function drawTrajectory(cannon, target, traj1, traj2, profile) {
+            const canvas = document.getElementById('trajectoryCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Устанавливаем размер canvas
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Очищаем canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Параметры для отрисовки
+            const padding = 50;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // Находим максимальные значения для масштабирования
+            const maxDistance = Math.max(
+                Math.abs(cannon[0] - target[0]),
+                Math.abs(cannon[2] - target[2])
+            ) * 1.2;
+            const maxHeight = 50; // Максимальная высота для визуализации
+            
+            // Функция масштабирования
+            const scaleX = (x) => padding + (x / maxDistance) * graphWidth;
+            const scaleY = (y) => height - padding - (y / maxHeight) * graphHeight;
+            
+            // Рисуем сетку
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = padding + (graphWidth / 10) * i;
+                const y = padding + (graphHeight / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+            
+            // Рисуем ось X (дистанция)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+            
+            // Рисуем ось Y (высота)
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.stroke();
+            
+            // Подписи осей
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '12px Arial';
+            ctx.fillText('Дистанция (блоки)', width / 2, height - 10);
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Высота (блоки)', 0, 0);
+            ctx.restore();
+            
+            // Функция для расчёта точки траектории
+            function getTrajectoryPoint(pitch, t, initialSpeed, gravity, airResistance) {
+                const pitchRad = pitch * Math.PI / 180;
+                const Vx = Math.cos(pitchRad) * initialSpeed;
+                const Vy = Math.sin(pitchRad) * initialSpeed;
+                
+                let x = 0;
+                let y = 0;
+                let vx = Vx;
+                let vy = Vy;
+                
+                for (let i = 0; i < t; i++) {
+                    x += vx;
+                    y += vy;
+                    vx *= airResistance;
+                    vy = airResistance * vy - gravity;
+                }
+                
+                return { x, y };
+            }
+            
+            // Рисуем траекторию 1 (низкая) - синяя
+            ctx.strokeStyle = '#4a90e2';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            const initialSpeed = 2 * profile.speedMultiplier; // Упрощённо
+            let firstPoint = true;
+            for (let t = 0; t <= traj1.airtime; t += 2) {
+                const point = getTrajectoryPoint(
+                    typeof traj1.pitch === 'number' ? traj1.pitch : 30,
+                    t,
+                    initialSpeed,
+                    profile.gravity,
+                    profile.airResistance
+                );
+                const x = scaleX(point.x);
+                const y = scaleY(point.y);
+                if (firstPoint) {
+                    ctx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Рисуем траекторию 2 (высокая) - оранжевая
+            ctx.strokeStyle = '#f5a623';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            firstPoint = true;
+            for (let t = 0; t <= traj2.airtime; t += 2) {
+                const point = getTrajectoryPoint(
+                    typeof traj2.pitch === 'number' ? traj2.pitch : 45,
+                    t,
+                    initialSpeed,
+                    profile.gravity,
+                    profile.airResistance
+                );
+                const x = scaleX(point.x);
+                const y = scaleY(point.y);
+                if (firstPoint) {
+                    ctx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Рисуем точку пушки
+            ctx.fillStyle = '#50bc54';
+            ctx.beginPath();
+            ctx.arc(scaleX(0), scaleY(0), 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('🔫', scaleX(0) - 10, scaleY(0) + 5);
+            
+            // Рисуем точку цели
+            ctx.fillStyle = '#980404';
+            ctx.beginPath();
+            ctx.arc(scaleX(maxDistance * 0.8), scaleY(0), 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.fillText('🎯', scaleX(maxDistance * 0.8) - 10, scaleY(0) + 5);
+            
+            // Легенда
+            ctx.fillStyle = '#4a90e2';
+            ctx.fillRect(width - 200, 20, 20, 3);
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText('Траектория 1 (низкая)', width - 175, 25);
+            
+            ctx.fillStyle = '#f5a623';
+            ctx.fillRect(width - 200, 35, 20, 3);
+            ctx.fillStyle = 'white';
+            ctx.fillText('Траектория 2 (высокая)', width - 175, 40);
+        }
+
+        function drawGrapeshotCone(cannon, target, traj1, profile) {
+            const coneAngle = profile.coneAngle || 15;
+            const distance = Math.sqrt(
+                Math.pow(cannon[0] - target[0], 2) + 
+                Math.pow(cannon[2] - target[2], 2)
+            );
+            const coneRadius = distance * Math.tan(coneAngle * Math.PI / 180);
+            
+            document.getElementById('grapeshot-info').style.display = 'block';
+            document.getElementById('cone-angle').textContent = coneAngle;
+            document.getElementById('cone-radius').textContent = coneRadius.toFixed(1);
+        }
+
+        // ==================== UI ЛОГИКА ====================
+        
+        const inputs = [
+            'cannon-x', 'cannon-y', 'cannon-z',
+            'target-x', 'target-y', 'target-z',
+            'power', 'length'
+        ];
+
+        const btn = document.getElementById('calculate-btn');
+        const status = document.getElementById('status');
+
+        // Загружаем настройки при старте
+        loadCustomProjectiles();
+        loadFromLocalStorage();
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                validateInputs();
+                saveToLocalStorage();
+            });
         });
+
+        document.getElementById('direction').addEventListener('change', saveToLocalStorage);
+        document.getElementById('projectile-type').addEventListener('change', saveToLocalStorage);
+
+        function validateInputs() {
+            const allFilled = inputs.every(id => {
+                const val = document.getElementById(id).value.trim();
+                return val !== '' && val !== '-' && !isNaN(val);
+            });
+            btn.disabled = !allFilled;
+        }
+
+        btn.addEventListener('click', () => {
+            try {
+                const cannon = [
+                    parseInt(document.getElementById('cannon-x').value),
+                    parseInt(document.getElementById('cannon-y').value),
+                    parseInt(document.getElementById('cannon-z').value)
+                ];
+                const target = [
+                    parseInt(document.getElementById('target-x').value),
+                    parseInt(document.getElementById('target-y').value),
+                    parseInt(document.getElementById('target-z').value)
+                ];
+                const power = parseInt(document.getElementById('power').value);
+                const length = parseInt(document.getElementById('length').value);
+                const direction = document.getElementById('direction').value;
+                const projectileType = document.getElementById('projectile-type').value;
+
+                const result = calculateTrajectories(cannon, target, power, direction, length, projectileType);
+                displayResults(result);
+                drawTrajectory(cannon, target, result.trajectories[0], result.trajectories[1], result.profile);
+                
+                if (projectileType === 'grapeshot') {
+                    drawGrapeshotCone(cannon, target, result.trajectories[0], result.profile);
+                } else {
+                    document.getElementById('grapeshot-info').style.display = 'none';
+                }
+                
+                document.getElementById('visualization-section').style.display = 'block';
+
+                status.textContent = `✅ Рассчитано для ${result.profile.icon} ${result.profile.name}`;
+                status.className = 'success';
+            } catch (e) {
+                status.textContent = " " + e.message;
+                status.className = 'error';
+                document.getElementById('visualization-section').style.display = 'none';
+            }
+        });
+
+        function displayResults(result) {
+            const [t1, t2] = result.trajectories;
+            const profile = result.profile;
+            
+            document.getElementById('results').style.display = 'grid';
+            
+            document.getElementById('proj-badge-1').textContent = `${profile.icon} ${profile.name}`;
+            document.getElementById('proj-badge-2').textContent = `${profile.icon} ${profile.name}`;
+            
+            const updateCard = (prefix, t) => {
+                document.getElementById(`yaw-${prefix}`).textContent = `${t.yaw.toFixed(2)}°`;
+                const pitchEl = document.getElementById(`pitch-${prefix}`);
+                pitchEl.textContent = typeof t.pitch === 'string' ? t.pitch : `${t.pitch.toFixed(2)}°`;
+                pitchEl.className = typeof t.pitch === 'string' ? 'result-value warning' : 'result-value';
+                document.getElementById(`airtime-${prefix}`).textContent = `${t.airtime} тиков (${t.airtimeSec.toFixed(2)}с)`;
+                document.getElementById(`fuze-${prefix}`).textContent = `${t.fuzeTime} тиков`;
+                document.getElementById(`precision-${prefix}`).textContent = `${t.precision}%`;
+            };
+
+            updateCard('1', t1);
+            updateCard('2', t2);
+        }
+
+        // ==================== МОДАЛЬНОЕ ОКНО ====================
         
-        document.getElementById('results').style.display = 'block';
-        showStatus("✓ Расчёт выполнен успешно", false);
-    } catch (e) {
-        showStatus(e.message || "Ошибка расчёта", true);
-        document.getElementById('results').style.display = 'none';
-    }
-}
-</script>
+        const modal = document.getElementById('custom-projectile-modal');
+        const btnAddProjectile = document.getElementById('btn-add-projectile');
+        const btnCancelCustom = document.getElementById('btn-cancel-custom');
+        const btnSaveCustom = document.getElementById('btn-save-custom');
+
+        btnAddProjectile.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        btnCancelCustom.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        btnSaveCustom.addEventListener('click', () => {
+            const name = document.getElementById('custom-name').value.trim();
+            const icon = document.getElementById('custom-icon').value.trim() || '';
+            const gravity = parseFloat(document.getElementById('custom-gravity').value);
+            const airResistance = parseFloat(document.getElementById('custom-air-resistance').value);
+            const speedMultiplier = parseFloat(document.getElementById('custom-speed').value);
+
+            if (!name) {
+                alert('Пожалуйста, введите название снаряда');
+                return;
+            }
+
+            if (gravity < 0.04 || gravity > 0.08) {
+                alert('Гравитация должна быть между 0.04 и 0.08');
+                return;
+            }
+
+            if (airResistance < 0.95 || airResistance > 1.0) {
+                alert('Сопротивление воздуха должно быть между 0.95 и 1.0');
+                return;
+            }
+
+            if (speedMultiplier < 1.5 || speedMultiplier > 3.0) {
+                alert('Множитель скорости должен быть между 1.5 и 3.0');
+                return;
+            }
+
+            const key = 'custom_' + Date.now();
+            PROJECTILE_PROFILES[key] = {
+                name: name,
+                icon: icon,
+                gravity: gravity,
+                airResistance: airResistance,
+                speedMultiplier: speedMultiplier
+            };
+
+            saveCustomProjectiles();
+            updateProjectileSelector();
+            document.getElementById('projectile-type').value = key;
+            
+            modal.classList.remove('active');
+            
+            // Очищаем форму
+            document.getElementById('custom-name').value = '';
+            document.getElementById('custom-icon').value = '';
+            document.getElementById('custom-gravity').value = '0.05';
+            document.getElementById('custom-air-resistance').value = '0.99';
+            document.getElementById('custom-speed').value = '2.0';
+        });
+
+        // Закрытие модального окна при клике вне его
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
