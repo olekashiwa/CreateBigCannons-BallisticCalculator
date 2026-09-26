@@ -1,4 +1,4 @@
-﻿# 🎯 Мираж-Гео: Баллистический калькулятор для Create: Big Cannons
+# 🎯 Мираж-Гео: Баллистический калькулятор для Create: Big Cannons
 
 **[Открыть веб-приложение](https://olekashiwa.github.io/CreateBigCannons-BallisticCalculator/)** | [English Version](README_EN.md)
 
