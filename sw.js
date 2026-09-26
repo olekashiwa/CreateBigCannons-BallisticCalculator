@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mirage-geo-v1';
+const CACHE_NAME = 'mirage-geo-v2';
 const urlsToCache = [
     '/CreateBigCannons-BallisticCalculator/',
     '/CreateBigCannons-BallisticCalculator/index.html',
